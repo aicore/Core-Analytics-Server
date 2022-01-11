@@ -1,8 +1,5 @@
-# template-nodejs
-A template project for nodejs. Has integrated linting, testing,
-coverage, reporting, Github actions and other goodies.
-
-Easily use this template to quick start a production ready nodejs project template.
+# Core Analytics Server
+Simple, privacy first, and scalable Analytics server.
 
 ## Code Guardian
 [![<app> build verification](https://github.com/aicore/template-nodejs/actions/workflows/build_verify.yml/badge.svg)](https://github.com/aicore/template-nodejs/actions/workflows/build_verify.yml)
