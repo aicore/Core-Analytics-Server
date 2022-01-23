@@ -14,6 +14,10 @@
 // jshint ignore: start
 /*global describe, it*/
 
+// TODO: to enable integration test, change cover and test command in package.json to below
+// "cover": "npm run cover:unit && npm run cover:integ",
+// "test": "npm run test:unit && npm run test:integ",
+
 import helloWorld from "../../src/index.js";
 import * as assert from 'assert';
 import * as chai from 'chai';
