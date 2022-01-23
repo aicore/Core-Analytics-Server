@@ -13,7 +13,8 @@
     "src/**/*.js"
   ],
   "exclude": [
-    "**/*.spec.js"
+    "**/*.spec.js",
+    "src/index.js"
   ],
   "branches": 90,
   "lines": 90,
