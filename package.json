@@ -40,7 +40,7 @@
     "mocha": "9.1.4"
   },
   "dependencies": {
-    "@aicore/linode-object-storage-lib": "^1.0.1",
+    "@aicore/linode-object-storage-lib": "1.0.2",
     "express": "4.17.2"
   }
 }

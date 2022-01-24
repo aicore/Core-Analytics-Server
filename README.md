@@ -16,6 +16,10 @@ Simple, privacy first, and scalable Analytics server.
   <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_Core-Analytics-Server&metric=sqale_index" alt="Technical debt" />
 </a>
 
+# Usage
+
+# Wiki Docs
+See wiki for more architecture and implementation details: https://github.com/aicore/Core-Analytics-Server/wiki
 
 # Development Notes
 Commands available:
