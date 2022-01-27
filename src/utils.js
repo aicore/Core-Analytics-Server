@@ -16,17 +16,14 @@
  *
  */
 
-import express from 'express';
 
-const app = express();
-const port = 3000;
+// file name is of the format AppName.yyyy-mm-dd-hh-mm-ss.ms.v1.json
+function getNewV1FileName(appName) {
+    const now = new Date(Date.now());
+    return `${appName}.${now.getUTCFullYear()}-${now.getUTCMonth()}-${now.getUTCDate()}-${now.getUTCHours()}` +
+        `-${now.getUTCMinutes()}-${now.getUTCSeconds()}-${now.getUTCMilliseconds()}.v1.json`;
+}
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
-
-app.listen(port, () => {
-    console.log(`Analytics server listening at http://localhost:${port}`);
-});
-
-export default app;
+export {
+    getNewV1FileName
+};
