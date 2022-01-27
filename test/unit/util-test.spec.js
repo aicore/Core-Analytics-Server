@@ -16,17 +16,20 @@
  *
  */
 
-import express from 'express';
+// jshint ignore: start
+/*global describe, it*/
 
-const app = express();
-const port = 3000;
+import * as chai from 'chai';
+import {getNewV1FileName} from "../../src/utils.js";
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
+let expect = chai.expect;
+
+describe('util Tests', function() {
+    it('Should get correct file name of format: AppName.yyyy-mm-dd-hh-mm-ss.ms.v1.json', function() {
+        let fileName = getNewV1FileName("testApp");
+        expect(fileName).to.be.a('string');
+        expect(fileName.startsWith("testApp")).to.be.true;
+        expect(fileName.endsWith(".v1.json")).to.be.true;
+        expect(fileName.split("-").length).to.equal(7);
+    });
 });
-
-app.listen(port, () => {
-    console.log(`Analytics server listening at http://localhost:${port}`);
-});
-
-export default app;
