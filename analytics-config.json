@@ -1,0 +1,7 @@
+{
+  "configVersion": 1,
+  "webDashboardEnabled": true,
+  "systemGenerated": {
+    "webDashboardAccessToken": "notGeneratedYet"
+  }
+}

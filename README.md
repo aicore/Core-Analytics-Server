@@ -18,6 +18,21 @@ Simple, privacy first, and scalable Analytics server.
 
 # Usage
 
+# Config
+The features of the analytics server can be configured in the `analytics-config.json` file.
+* The changes to the file will be automatically picked up and configuration updated by the server without needing a restart.
+* **NB**: The server relies on `configVersion` number to decide if the updated config should be loaded. Increase the version number after you made your config
+changes for the new configuration to take effect. This will help reduce unintended config changes.
+
+## Config fields
+1. `configVersion` : The version number for run time configuration as discussed above.
+1. `webDashboardEnabled` : `true/false` to enable or disable web dashboard
+1. `systemGenerated` : The properties in this object are system generated and read only. It is used by the analytics server to communicate about the
+config changes to the user.
+
+### systemGenerated configuration properties
+1. `webDashboardAccessToken` : a random token that can be used to access the web dashboard. This is reset everytime the web dashboard is disabled/enabled from the config file.
+
 # Wiki Docs
 See wiki for more architecture and implementation details: https://github.com/aicore/Core-Analytics-Server/wiki
 
