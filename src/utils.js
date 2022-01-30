@@ -16,6 +16,8 @@
  *
  */
 
+import fs from 'fs';
+const fsPromises = fs.promises;
 
 // file name is of the format AppName.yyyy-mm-dd-hh-mm-ss.ms.v1.json
 function getNewV1FileName(appName) {
@@ -24,6 +26,17 @@ function getNewV1FileName(appName) {
         `-${now.getUTCMinutes()}-${now.getUTCSeconds()}-${now.getUTCMilliseconds()}.v1.json`;
 }
 
+async function writeAsJson(fileName, jsObject) {
+    let jsonString = JSON.stringify(jsObject, null, '  ' );
+    await fsPromises.writeFile(fileName, jsonString, 'utf8');
+}
+
+async function readJsonFile(fileName) {
+    return JSON.parse(await fsPromises.readFile(fileName, 'utf8'));
+}
+
 export {
-    getNewV1FileName
+    getNewV1FileName,
+    readJsonFile,
+    writeAsJson
 };

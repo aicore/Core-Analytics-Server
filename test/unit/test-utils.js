@@ -41,7 +41,12 @@ async function deleteFile(fileName) {
     }
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export {
     fileCanBeRead,
-    deleteFile
+    deleteFile,
+    sleep
 };
