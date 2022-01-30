@@ -19,17 +19,17 @@
 import fs from 'fs';
 import path from "path";
 import {writeAsJson, readJsonFile} from "./utils.js";
-import { createRequire } from "module"; // Bring in the ability to create the 'require' method
-const require = createRequire(import.meta.url); // construct the require method
 const DEFAULT_CONFIG_FILE_PATH = path.resolve('analytics-config.json');
 
 let configFilePath = DEFAULT_CONFIG_FILE_PATH;
-let configuration = require(configFilePath);
+let configuration = {};
 
 async function reloadConfigFile() {
     configuration = {};
     configuration = await readJsonFile(configFilePath);
 }
+
+reloadConfigFile();
 
 async function updateSystemGeneratedConfig(key, value) {
     configuration.systemGenerated[key] = value;
@@ -52,15 +52,11 @@ function setConfigFilePath(newConfigFilePath) {
 function _setupConfigFileWatcher() {
     fs.watch(configFilePath, { persistent: false },
         async function (eventType, filename) {
-            try {
-                if(eventType === 'change'){
-                    let newConfiguration = await readJsonFile(configFilePath);
-                    if(newConfiguration.configVersion > configuration.configVersion){
-                        reloadConfigFile();
-                    }
+            if(eventType === 'change'){
+                let newConfiguration = await readJsonFile(configFilePath);
+                if(newConfiguration.configVersion > configuration.configVersion){
+                    reloadConfigFile();
                 }
-            } catch (e) {
-                console.log(e);
             }
         }
     );
