@@ -17,11 +17,9 @@
  */
 
 // jshint ignore: start
-/*global describe, it*/
+/*global describe, it, before, beforeEach, after*/
 
 import * as chai from 'chai';
-import { createRequire } from "module"; // Bring in the ability to create the 'require' method
-const require = createRequire(import.meta.url); // construct the require method
 import {
     updateSystemGeneratedConfig,
     getConfig,
@@ -34,11 +32,12 @@ import {deleteFile, sleep} from "./test-utils.js";
 import path from "path";
 
 let expect = chai.expect;
-let defaultConfig = require(DEFAULT_CONFIG_FILE_PATH);
+let defaultConfig = {};
 let TEST_CONFIG_FILE_PATH = path.resolve("analytics-config-test.json");
 
 describe('config-manager.js Tests', function() {
     before(async function () {
+        defaultConfig = await readJsonFile(DEFAULT_CONFIG_FILE_PATH);
         await writeAsJson(TEST_CONFIG_FILE_PATH, {});
         setConfigFilePath(TEST_CONFIG_FILE_PATH);
     });
