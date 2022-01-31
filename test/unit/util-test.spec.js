@@ -20,7 +20,7 @@
 /*global describe, it*/
 
 import * as chai from 'chai';
-import {getNewV1FileName} from "../../src/utils.js";
+import {getNewV1FileName, getUTF8StringSizeInBytes} from "../../src/utils.js";
 
 let expect = chai.expect;
 
@@ -31,5 +31,10 @@ describe('util Tests', function() {
         expect(fileName.startsWith("testApp")).to.be.true;
         expect(fileName.endsWith(".v1.json")).to.be.true;
         expect(fileName.split("-").length).to.equal(7);
+    });
+
+    it('Should get compute correct utf8 string size in bytes', function() {
+        let byteSize = getUTF8StringSizeInBytes("testApp");
+        expect(byteSize).to.equal(7);
     });
 });

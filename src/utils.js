@@ -26,6 +26,10 @@ function getNewV1FileName(appName) {
         `-${now.getUTCMinutes()}-${now.getUTCSeconds()}-${now.getUTCMilliseconds()}.v1.json`;
 }
 
+function getUnixTimestampUTCNow() {
+    return Date.now();
+}
+
 async function writeAsJson(fileName, jsObject) {
     let jsonString = JSON.stringify(jsObject, null, '  ' );
     await fsPromises.writeFile(fileName, jsonString, 'utf8');
@@ -35,8 +39,19 @@ async function readJsonFile(fileName) {
     return JSON.parse(await fsPromises.readFile(fileName, 'utf8'));
 }
 
+async function ensureDirExists(path) {
+    await fsPromises.mkdir(path, { recursive: true });
+}
+
+function getUTF8StringSizeInBytes(str) {
+    return Buffer.byteLength(str, 'utf8');
+}
+
 export {
     getNewV1FileName,
+    getUnixTimestampUTCNow,
+    ensureDirExists,
     readJsonFile,
-    writeAsJson
+    writeAsJson,
+    getUTF8StringSizeInBytes
 };
