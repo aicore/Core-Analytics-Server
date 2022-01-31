@@ -17,7 +17,7 @@
  */
 
 // jshint ignore: start
-/*global describe, it, before, beforeEach, after*/
+/*global describe, it, before, beforeEach, after, afterEach*/
 
 import * as chai from 'chai';
 import {
@@ -25,6 +25,8 @@ import {
     getConfig,
     getSystemGeneratedConfig,
     setConfigFilePath,
+    onConfigEvent,
+    CONFIG_CHANGED_EVENT,
     DEFAULT_CONFIG_FILE_PATH
 } from "../../src/config-manager.js";
 import {writeAsJson, readJsonFile} from "../../src/utils.js";
@@ -39,16 +41,21 @@ describe('config-manager.js Tests', function() {
     before(async function () {
         defaultConfig = await readJsonFile(DEFAULT_CONFIG_FILE_PATH);
         await writeAsJson(TEST_CONFIG_FILE_PATH, {});
-        setConfigFilePath(TEST_CONFIG_FILE_PATH);
+        await setConfigFilePath(TEST_CONFIG_FILE_PATH);
     });
 
     beforeEach(async function () {
         await writeAsJson(TEST_CONFIG_FILE_PATH, defaultConfig);
+        await setConfigFilePath(TEST_CONFIG_FILE_PATH);
+    });
+
+    afterEach(async function () {
+        await deleteFile(TEST_CONFIG_FILE_PATH);
     });
 
     after(async function () {
-        setConfigFilePath(DEFAULT_CONFIG_FILE_PATH);
-        deleteFile(TEST_CONFIG_FILE_PATH);
+        await setConfigFilePath(DEFAULT_CONFIG_FILE_PATH);
+        await deleteFile(TEST_CONFIG_FILE_PATH);
     });
 
     it('Should get systemGenerated configs', async function() {
@@ -77,5 +84,23 @@ describe('config-manager.js Tests', function() {
         await writeAsJson(TEST_CONFIG_FILE_PATH, currentConfig);
         await sleep(100);
         expect(getConfig("newTestKey")).to.be.undefined;
+    });
+
+    it('Should generate config changed event', function(done) {
+        async function f() {
+            const currentConfig = await readJsonFile(TEST_CONFIG_FILE_PATH);
+            currentConfig["newTestKey"] = "newTestValue";
+            currentConfig.configVersion = currentConfig.configVersion + 1;
+            let configEventRaised = false;
+            onConfigEvent(CONFIG_CHANGED_EVENT, ()=>{
+                if(!configEventRaised){
+                    expect(getConfig("newTestKey")).to.equal("newTestValue");
+                    configEventRaised = true;
+                    done();
+                }
+            });
+            await writeAsJson(TEST_CONFIG_FILE_PATH, currentConfig);
+        }
+        f();
     });
 });

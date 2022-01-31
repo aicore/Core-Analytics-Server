@@ -18,21 +18,30 @@
 
 import fs from 'fs';
 import path from "path";
+import events from "events";
 import {writeAsJson, readJsonFile} from "./utils.js";
+
 const DEFAULT_CONFIG_FILE_PATH = path.resolve('analytics-config.json');
+const CONFIG_CHANGED_EVENT = 'CONFIG_CHANGED_EVENT';
+const eventEmitter = new events();
+
+function onConfigEvent(eventType, cbFn) {
+    eventEmitter.on(eventType, cbFn);
+}
 
 let configFilePath = DEFAULT_CONFIG_FILE_PATH;
 let configuration = {};
 
 async function reloadConfigFile() {
-    configuration = {};
     configuration = await readJsonFile(configFilePath);
+    eventEmitter.emit(CONFIG_CHANGED_EVENT);
 }
 
 reloadConfigFile();
 
 async function updateSystemGeneratedConfig(key, value) {
     configuration.systemGenerated[key] = value;
+    eventEmitter.emit(CONFIG_CHANGED_EVENT);
     await writeAsJson(configFilePath, configuration);
 }
 
@@ -44,9 +53,10 @@ function getSystemGeneratedConfig() {
     return configuration.systemGenerated;
 }
 
-function setConfigFilePath(newConfigFilePath) {
+async function setConfigFilePath(newConfigFilePath) {
     configFilePath = newConfigFilePath;
     _setupConfigFileWatcher();
+    await reloadConfigFile();
 }
 
 function _setupConfigFileWatcher() {
@@ -55,7 +65,7 @@ function _setupConfigFileWatcher() {
             if(eventType === 'change'){
                 let newConfiguration = await readJsonFile(configFilePath);
                 if(newConfiguration.configVersion > configuration.configVersion){
-                    reloadConfigFile();
+                    await reloadConfigFile();
                 }
             }
         }
@@ -70,5 +80,7 @@ export {
     getSystemGeneratedConfig,
     reloadConfigFile,
     setConfigFilePath,
+    onConfigEvent,
+    CONFIG_CHANGED_EVENT,
     DEFAULT_CONFIG_FILE_PATH
 };

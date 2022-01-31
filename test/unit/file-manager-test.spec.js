@@ -20,13 +20,13 @@
 /*global describe, it*/
 
 import * as chai from 'chai';
-import {pushDataForApp, getDumpFileToUpload} from "../../src/file-manager.js";
+import {pushDataForApp, getDumpFileToUpload, getAllAppNames} from "../../src/file-manager.js";
 import {readJsonFile, getUnixTimestampUTCNow} from "../../src/utils.js";
 import {deleteFile} from "./test-utils.js";
 
 let expect = chai.expect;
 
-describe('config-manager.js Tests', function() {
+describe('file-manager.js Tests', function() {
     it('Should get dump file to Upload if exists', async function() {
         const appName = "testApp";
         await pushDataForApp(appName, JSON.stringify({"message": "hello"}));
@@ -39,6 +39,20 @@ describe('config-manager.js Tests', function() {
         expect(writtenDumpFile["unixTimestampUTCAtServer"]).to.be.lessThan(getUnixTimestampUTCNow());
         expect(writtenDumpFile["clientAnalytics"][2]['endTime']).to.be.lessThan(getUnixTimestampUTCNow());
         await deleteFile(fileToUpload.filePath);
+    });
+
+    it('Should return all app names that has a valid dump file', async function() {
+        await pushDataForApp("testApp1", JSON.stringify({"message": "hello"}));
+        await pushDataForApp("testApp2", JSON.stringify({"message": "world"}));
+
+        let appNames = getAllAppNames();
+        expect(appNames.length).to.equal(2);
+        expect(appNames).to.contain("testApp1");
+        expect(appNames).to.contain("testApp2");
+
+        // clean up
+        await deleteFile((await getDumpFileToUpload("testApp1")).filePath);
+        await deleteFile((await getDumpFileToUpload("testApp2")).filePath);
     });
 
     it('Should get empty if there is no dump file to upload', async function() {
