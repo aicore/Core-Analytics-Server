@@ -26,11 +26,32 @@ changes for the new configuration to take effect. This will help reduce unintend
 
 ## Config fields
 1. `configVersion` : The version number for run time configuration as discussed above.
-1. `webDashboardEnabled` : `true/false` to enable or disable web dashboard
-1. `systemGenerated` : The properties in this object are system generated and read only. It is used by the analytics server to communicate about the
+2. `webDashboardEnabled` : `true/false` to enable or disable web dashboard
+3. `systemGenerated` : The properties in this object are system generated and read only. It is used by the analytics server to communicate about the
 config changes to the user.
+4. `rotateDumpFiles`: Specifies details on how the analytics dump files are rotated. See below 
+section for more details.
 
-### systemGenerated configuration properties
+### rotateDumpFiles configuration
+1. `maxFileSizeBytes`: When the current dump file size crosses this threshold, it will be rotated 
+to persistent storage and a new dump file will be created to continue dumping.
+2. `rotateInEveryNSeconds`: The time in seconds after which the log file will be rotated. Note that the log file
+will be rotated when either of `maxFileSizeBytes` or `rotateInEveryNSeconds` threshold is breached.
+   1. `storage`: Configuration on where to persist the rotated dump file.
+      1. `destination`: Can be `none` or `linode`. If the destination is `none`, the dumps will be persisted in the current machine.
+      2. If `destination` is `linode`, then provide linode object storage access config here.
+       ``` 
+      // Linode storage config example: 
+      "storage": {
+            "destination":"linode",
+            "accessKeyId":  "LinodeAccessKeyId",
+            "secretAccessKey":  "LinodeSecretAccessKey",
+            "region":  "LinodeRegion",
+            "bucket": "LinodeBucket"
+      }
+      ```
+
+### systemGenerated configuration
 1. `webDashboardAccessToken` : a random token that can be used to access the web dashboard. This is reset everytime the web dashboard is disabled/enabled from the config file.
 
 # Wiki Docs
