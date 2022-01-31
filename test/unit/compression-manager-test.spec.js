@@ -20,6 +20,7 @@
 /*global describe, it*/
 
 import * as chai from 'chai';
+import path from "path";
 import {getNewV1FileName} from "../../src/utils.js";
 import {compressFile} from "../../src/compression-manager.js";
 import {fileCanBeRead, deleteFile} from "./test-utils.js";
@@ -40,13 +41,29 @@ describe('compression-manager.js Tests', function() {
         expect(await fileCanBeRead(compressedFileName)).to.be.false;
     });
 
-    it('Should compress valid file', async function() {
+    it('Should compress valid file with relative path', async function() {
         let fileName = 'package.json';
-        let compressedFileName = `${fileName}.tar.gz`;
+        let expectedCompressedFileName = path.resolve(`${fileName}.tar.gz`);
+        let compressedFileName = "";
         let err = null;
-        await deleteFile(compressedFileName);
+        await deleteFile(expectedCompressedFileName);
         try{
-            await compressFile(fileName);
+            compressedFileName = await compressFile(fileName);
+        } catch (error) {
+            err = error;
+        }
+        expect(err).to.be.null;
+        expect(compressedFileName).to.equal(expectedCompressedFileName);
+        expect(await fileCanBeRead(compressedFileName)).to.be.true;
+        expect(await deleteFile(compressedFileName)).to.be.true;
+    });
+
+    it('Should compress valid file with absolute path', async function() {
+        let absoluteFilePath = path.resolve('package.json');
+        let compressedFileName = "";
+        let err = null;
+        try{
+            compressedFileName = await compressFile(absoluteFilePath);
         } catch (error) {
             err = error;
         }

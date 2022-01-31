@@ -17,7 +17,6 @@
  */
 
 import fs from 'fs';
-const fsPromises = fs.promises;
 import {getNewV1FileName, getUnixTimestampUTCNow, getUTF8StringSizeInBytes, ensureDirExists} from "./utils.js";
 import path from "path";
 
@@ -81,7 +80,12 @@ async function pushDataForApp(appName, jsonStringData) {
     handle.bytesWritten = handle.bytesWritten + getUTF8StringSizeInBytes(jsonStringData);
 }
 
+function getAllAppNames() {
+    return Object.keys(appAnalyticsFileHandle);
+}
+
 export {
     pushDataForApp,
-    getDumpFileToUpload
+    getDumpFileToUpload,
+    getAllAppNames
 };
