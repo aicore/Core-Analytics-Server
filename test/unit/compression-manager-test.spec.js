@@ -23,7 +23,8 @@ import * as chai from 'chai';
 import path from "path";
 import {getNewV1FileName} from "../../src/utils.js";
 import {compressFile} from "../../src/compression-manager.js";
-import {fileCanBeRead, deleteFile} from "./test-utils.js";
+import {fileCanBeRead} from "./test-utils.js";
+import {deleteFile} from "../../src/utils.js";
 
 let expect = chai.expect;
 

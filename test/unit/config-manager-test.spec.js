@@ -29,8 +29,8 @@ import {
     CONFIG_CHANGED_EVENT,
     DEFAULT_CONFIG_FILE_PATH
 } from "../../src/config-manager.js";
-import {writeAsJson, readJsonFile} from "../../src/utils.js";
-import {deleteFile, sleep} from "./test-utils.js";
+import {deleteFile, writeAsJson, readJsonFile} from "../../src/utils.js";
+import {sleep} from "./test-utils.js";
 import path from "path";
 
 let expect = chai.expect;
