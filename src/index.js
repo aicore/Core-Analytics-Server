@@ -18,6 +18,7 @@
 
 import express from 'express';
 import {processDataFromClient} from "./analytics-data-manager.js";
+import {setupFileRotationTimers} from "./file-rotation-manager.js";
 
 const app = express();
 const port = 3000;
@@ -33,5 +34,7 @@ app.post('/ingest', async function (req, res, next) {
 app.listen(port, () => {
     console.log(`Analytics server listening at http://localhost:${port}`);
 });
+
+setupFileRotationTimers();
 
 export default app;

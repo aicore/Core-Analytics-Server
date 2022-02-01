@@ -21,7 +21,7 @@ const fsPromises = fs.promises;
 import path from "path";
 import util from 'util';
 import child_process from 'child_process';
-import {ensureDirExists} from "./utils.js";
+import {ensureDirExistsSync} from "./utils.js";
 const exec = util.promisify(child_process.exec);
 
 async function compressFile(filePath) {
@@ -30,7 +30,7 @@ async function compressFile(filePath) {
     }
     const dirName = path.dirname(filePath);
     const fileName = path.basename(filePath);
-    await ensureDirExists(dirName);
+    ensureDirExistsSync(dirName);
     await fsPromises.stat(filePath); // will throw if file does not exist preventing empty compressed archives
     await exec(`tar -zcvf ${dirName}/${fileName}.tar.gz -C ${dirName} ${fileName}`);
     return `${dirName}/${fileName}.tar.gz`;
