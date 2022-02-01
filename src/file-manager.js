@@ -17,7 +17,7 @@
  */
 
 import fs from 'fs';
-import {getNewV1FileName, getUnixTimestampUTCNow, getUTF8StringSizeInBytes, ensureDirExists} from "./utils.js";
+import {getNewV1FileName, getUnixTimestampUTCNow, getUTF8StringSizeInBytes, ensureDirExistsSync} from "./utils.js";
 import path from "path";
 
 // // file Schema sample , see https://github.com/aicore/Core-Analytics-Server/wiki#analytics-backend
@@ -52,7 +52,7 @@ async function _createNewHandleForApp(appName) {
    "schemaVersion" : 1,
    "unixTimestampUTCAtServer" : ${startTime},
    "clientAnalytics":[\n`;
-    await ensureDirExists(dataPath);
+    await ensureDirExistsSync(dataPath);
     const writableStream = fs.createWriteStream(filePath, {flags:'a'});
     writableStream.write(fileContent, UTF8);
     const handle = {
@@ -86,6 +86,7 @@ async function pushDataForApp(appName, jsonStringData) {
     let handle = appAnalyticsFileHandle[appName];
     if(!handle){
         handle = await _createNewHandleForApp(appName);
+        appAnalyticsFileHandle[appName] = handle;
     }
     handle.writableStream.write(`\t${jsonStringData},\n`, UTF8);
     handle.bytesWritten = handle.bytesWritten + getUTF8StringSizeInBytes(jsonStringData);

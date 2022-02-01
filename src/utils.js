@@ -43,8 +43,8 @@ async function readJsonFile(fileName) {
     return JSON.parse(await fsPromises.readFile(fileName, 'utf8'));
 }
 
-async function ensureDirExists(path) {
-    await fsPromises.mkdir(path, { recursive: true });
+function ensureDirExistsSync(path) {
+    fs.mkdirSync(path, { recursive: true });
 }
 
 function getUTF8StringSizeInBytes(str) {
@@ -63,7 +63,7 @@ async function deleteFile(fileName) {
 export {
     getNewV1FileName,
     getUnixTimestampUTCNow,
-    ensureDirExists,
+    ensureDirExistsSync,
     readJsonFile,
     readTextFile,
     writeAsJson,
