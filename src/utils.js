@@ -55,7 +55,7 @@ async function deleteFile(fileName) {
     try {
         await fsPromises.unlink(fileName);
         return true;
-    } catch (e) {
+    }catch (e) {
         return false;
     }
 }
