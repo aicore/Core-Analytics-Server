@@ -17,16 +17,21 @@
  */
 
 // jshint ignore: start
-/*global describe, it*/
+/*global describe, it, after*/
 
 import * as chai from 'chai';
 import {processDataFromClient} from "../../src/analytics-data-manager.js";
 import {onFileEvent, DUMP_FILE_UPDATED_EVENT} from "../../src/file-manager.js";
-import {sleep} from "./test-utils.js";
+import {rmrf, sleep} from "./test-utils.js";
 
 let expect = chai.expect;
 
 describe('analytics-data-manager.js Tests', function() {
+    after(async function () {
+        await sleep(1000);
+        await rmrf('data');
+    });
+
     it('should fail validation if schema version is not 1', async function() {
         const response = await processDataFromClient({
             "schemaVersion": 2,
