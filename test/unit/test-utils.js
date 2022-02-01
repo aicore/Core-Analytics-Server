@@ -21,7 +21,10 @@
 
 
 import fs from 'fs';
+import util from 'util';
 const fsPromises = fs.promises;
+import child_process from 'child_process';
+const exec = util.promisify(child_process.exec);
 
 async function fileCanBeRead(fileName) {
     try {
@@ -36,7 +39,12 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+async function rmrf(path) {
+    await exec(`rm -rf ${path}`);
+}
+
 export {
     fileCanBeRead,
-    sleep
+    sleep,
+    rmrf
 };
