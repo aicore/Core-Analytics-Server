@@ -16,8 +16,6 @@
  *
  */
 
-import fs from 'fs';
-const fsPromises = fs.promises;
 import {onConfigEvent, CONFIG_CHANGED_EVENT, getConfig} from "./config-manager.js";
 import {getAllAppNames, getDumpFileToUpload, onFileEvent, DUMP_FILE_UPDATED_EVENT} from "./file-manager.js";
 import {compressFile} from "./compression-manager.js";
@@ -56,13 +54,19 @@ async function rotateAllDumpFiles(){
     }
 }
 
+function isLocalDestination() {
+    return rotateDumpFiles.storage.destination === "none";
+}
+
 async function _rotateDumpFile(appName) {
     let appFileHandle = await getDumpFileToUpload(appName);
     if(appFileHandle){
         let compressedFilePath = await compressFile(appFileHandle.filePath);
         // upload file to object storage
         await deleteFile(appFileHandle.filePath);
-        await deleteFile(compressedFilePath);
+        if(!isLocalDestination()){
+            await deleteFile(compressedFilePath);
+        }
     }
     eventEmitter.emit(APP_DUMP_ROTATED_EVENT, appFileHandle);
 }

@@ -17,12 +17,17 @@
  */
 
 import express from 'express';
+import {processDataFromClient} from "./analytics-data-manager.js";
 
 const app = express();
 const port = 3000;
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
+app.use(express.json()); // for parsing application/json
+
+app.post('/ingest', async function (req, res, next) {
+    const response = await processDataFromClient(req.body);
+    res.status(response.statusCode);
+    res.json(response.returnData);
 });
 
 app.listen(port, () => {

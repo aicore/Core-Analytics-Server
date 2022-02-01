@@ -56,7 +56,7 @@ describe('file-rotation-manager.js Tests', function() {
             maxFileSizeBytes: 100000000,
             rotateInEveryNSeconds: 600,
             storage: {
-                destination: "none"
+                destination: "yo"
             }
         };
         await _writeDefaultConfigTestFile();
@@ -80,7 +80,7 @@ describe('file-rotation-manager.js Tests', function() {
                 maxFileSizeBytes: 100000000,
                 rotateInEveryNSeconds: .2,
                 storage: {
-                    destination: "none"
+                    destination: "yo"
                 }
             };
             await _writeDefaultConfigTestFile();
@@ -110,7 +110,7 @@ describe('file-rotation-manager.js Tests', function() {
                 maxFileSizeBytes: 1000,
                 rotateInEveryNSeconds: 600,
                 storage: {
-                    destination: "none"
+                    destination: "yo"
                 }
             };
             await _writeDefaultConfigTestFile();
