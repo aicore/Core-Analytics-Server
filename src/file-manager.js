@@ -30,6 +30,14 @@ import path from "path";
 // ]
 // }
 
+import events from "events";
+
+const DUMP_FILE_UPDATED_EVENT = 'DUMP_FILE_UPDATED_EVENT';
+const eventEmitter = new events();
+
+function onFileEvent(eventType, cbFn) {
+    eventEmitter.on(eventType, cbFn);
+}
 
 let appAnalyticsFileHandle = {};
 const UTF8 = 'UTF8';
@@ -40,6 +48,7 @@ async function _createNewHandleForApp(appName) {
     const filePath = `${dataPath}/${fileName}`;
     const startTime = getUnixTimestampUTCNow();
     const fileContent = `{
+   "appName": "${appName}",
    "schemaVersion" : 1,
    "unixTimestampUTCAtServer" : ${startTime},
    "clientAnalytics":[\n`;
@@ -47,6 +56,7 @@ async function _createNewHandleForApp(appName) {
     const writableStream = fs.createWriteStream(filePath, {flags:'a'});
     writableStream.write(fileContent, UTF8);
     const handle = {
+        appName: appName,
         fileName: fileName,
         filePath: filePath,
         startTime: startTime,
@@ -54,6 +64,7 @@ async function _createNewHandleForApp(appName) {
         bytesWritten: getUTF8StringSizeInBytes(fileContent)
     };
     appAnalyticsFileHandle[appName] = handle;
+    eventEmitter.emit(DUMP_FILE_UPDATED_EVENT, handle);
     return handle;
 }
 
@@ -78,6 +89,7 @@ async function pushDataForApp(appName, jsonStringData) {
     }
     handle.writableStream.write(`\t${jsonStringData},\n`, UTF8);
     handle.bytesWritten = handle.bytesWritten + getUTF8StringSizeInBytes(jsonStringData);
+    eventEmitter.emit(DUMP_FILE_UPDATED_EVENT, handle);
 }
 
 function getAllAppNames() {
@@ -87,5 +99,7 @@ function getAllAppNames() {
 export {
     pushDataForApp,
     getDumpFileToUpload,
-    getAllAppNames
+    getAllAppNames,
+    onFileEvent,
+    DUMP_FILE_UPDATED_EVENT
 };

@@ -32,21 +32,11 @@ async function fileCanBeRead(fileName) {
     }
 }
 
-async function deleteFile(fileName) {
-    try {
-        await fsPromises.unlink(fileName);
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
-
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 export {
     fileCanBeRead,
-    deleteFile,
     sleep
 };

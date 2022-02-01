@@ -21,8 +21,7 @@
 
 import * as chai from 'chai';
 import {pushDataForApp, getDumpFileToUpload, getAllAppNames} from "../../src/file-manager.js";
-import {readJsonFile, getUnixTimestampUTCNow} from "../../src/utils.js";
-import {deleteFile} from "./test-utils.js";
+import {deleteFile, readJsonFile, getUnixTimestampUTCNow} from "../../src/utils.js";
 
 let expect = chai.expect;
 

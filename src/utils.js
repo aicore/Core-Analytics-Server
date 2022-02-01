@@ -35,6 +35,10 @@ async function writeAsJson(fileName, jsObject) {
     await fsPromises.writeFile(fileName, jsonString, 'utf8');
 }
 
+async function readTextFile(fileName) {
+    return fsPromises.readFile(fileName, 'utf8');
+}
+
 async function readJsonFile(fileName) {
     return JSON.parse(await fsPromises.readFile(fileName, 'utf8'));
 }
@@ -47,11 +51,22 @@ function getUTF8StringSizeInBytes(str) {
     return Buffer.byteLength(str, 'utf8');
 }
 
+async function deleteFile(fileName) {
+    try {
+        await fsPromises.unlink(fileName);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
 export {
     getNewV1FileName,
     getUnixTimestampUTCNow,
     ensureDirExists,
     readJsonFile,
+    readTextFile,
     writeAsJson,
+    deleteFile,
     getUTF8StringSizeInBytes
 };
