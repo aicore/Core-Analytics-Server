@@ -20,7 +20,7 @@
 /*global describe, it*/
 
 import * as chai from 'chai';
-import {getNewV1FileName, getUTF8StringSizeInBytes} from "../../src/utils.js";
+import {deleteFile, getNewV1FileName, getUTF8StringSizeInBytes} from "../../src/utils.js";
 
 let expect = chai.expect;
 
@@ -36,5 +36,10 @@ describe('util Tests', function() {
     it('Should get compute correct utf8 string size in bytes', function() {
         let byteSize = getUTF8StringSizeInBytes("testApp");
         expect(byteSize).to.equal(7);
+    });
+
+    it('Should return false if delete file failed', async function() {
+        let deleteStatus = await deleteFile('nonExistentFile');
+        expect(deleteStatus).to.be.false;
     });
 });

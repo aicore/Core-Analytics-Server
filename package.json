@@ -15,8 +15,8 @@
     "test:integ": "mocha test/integration/**/*.spec.js --timeout=3000",
     "printReportsLink": "echo Detailed unit test coverage report: file:///$(pwd)/coverage-unit/index.html && echo Detailed integration test coverage report: file:///$(pwd)/coverage-integration/index.html",
     "cover": "npm run cover:unit",
-    "cover:unit": "c8 -c .nycrc.unit.json npm run test:unit && npm run --silent printReportsLink",
-    "cover:integ": "c8 -c .nycrc.integration.json npm run test:integ && npm run --silent printReportsLink",
+    "cover:unit": "npm run --silent printReportsLink && c8 -c .nycrc.unit.json npm run test:unit",
+    "cover:integ": "npm run --silent printReportsLink && c8 -c .nycrc.integration.json npm run test:integ",
     "build": "npm run cover",
     "serve": "node src/index.js"
   },
