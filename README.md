@@ -31,6 +31,8 @@ changes for the new configuration to take effect. This will help reduce unintend
 config changes to the user.
 4. `rotateDumpFiles`: Specifies details on how the analytics dump files are rotated. See below 
 section for more details.
+5. `allowedAppNames`: An array that whitelists the appNames that this analytics
+server will accept. if `*` is specified in the list, then everything will be accepted.
 
 ### rotateDumpFiles configuration
 1. `maxFileSizeBytes`: When the current dump file size crosses this threshold, it will be rotated 

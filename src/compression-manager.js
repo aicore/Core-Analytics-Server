@@ -32,7 +32,7 @@ async function compressFile(filePath) {
     const fileName = path.basename(filePath);
     await ensureDirExists(dirName);
     await fsPromises.stat(filePath); // will throw if file does not exist preventing empty compressed archives
-    await exec(`tar -zcvf ${dirName}/${fileName}.tar.gz ${filePath}`);
+    await exec(`tar -zcvf ${dirName}/${fileName}.tar.gz -C ${dirName} ${fileName}`);
     return `${dirName}/${fileName}.tar.gz`;
 }
 

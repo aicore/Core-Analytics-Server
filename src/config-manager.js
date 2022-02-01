@@ -76,6 +76,8 @@ _setupConfigFileWatcher();
 
 export {
     getConfig,
+    // setConfig is not present by design as the system is not supposed to update user config.
+    // use updateSystemGeneratedConfig section for that.
     updateSystemGeneratedConfig,
     getSystemGeneratedConfig,
     reloadConfigFile,

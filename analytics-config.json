@@ -1,6 +1,7 @@
 {
   "configVersion": 1,
   "webDashboardEnabled": true,
+  "allowedAppNames": ["*"],
   "rotateDumpFiles" : {
     "maxFileSizeBytes": 100000000,
     "rotateInEveryNSeconds": 600,
