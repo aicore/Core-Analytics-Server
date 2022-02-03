@@ -6,7 +6,7 @@
     "maxFileSizeBytes": 100000000,
     "rotateInEveryNSeconds": 600,
     "storage": {
-      "destination": "none"
+      "destination": "local"
     }
   },
   "systemGenerated": {
