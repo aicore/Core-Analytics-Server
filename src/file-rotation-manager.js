@@ -86,8 +86,19 @@ async function _uploadToLinode(filePath) {
     }
 }
 
+function _logFileHandleDetails(handle) {
+    console.log("rotating dump file: ", {
+        appName: handle.appName,
+        fileName: handle.fileName,
+        filePath: handle.filePath,
+        startTime: handle.startTime,
+        uncompressedFileSize: handle.bytesWritten
+    });
+}
+
 async function _rotateDumpFile(appName) {
     let appFileHandle = await getDumpFileToUpload(appName);
+    _logFileHandleDetails(appFileHandle);
     if(appFileHandle){
         let compressedFilePath = await compressFile(appFileHandle.filePath);
         await deleteFile(appFileHandle.filePath);
