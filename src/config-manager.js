@@ -65,7 +65,6 @@ function getSystemGeneratedConfig(key) {
     if(configuration["systemGenerated"]){
         return configuration["systemGenerated"][key];
     }
-    return undefined;
 }
 
 async function setConfigFilePath(newConfigFilePath) {

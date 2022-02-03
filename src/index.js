@@ -17,6 +17,7 @@
  */
 
 import express from 'express';
+import crypto from 'crypto';
 import {processDataFromClient} from "./analytics-data-manager.js";
 import {setupFileRotationTimers} from "./file-rotation-manager.js";
 import {updateSystemGeneratedConfig, getConfig, getSystemGeneratedConfig} from "./config-manager.js";
@@ -51,6 +52,6 @@ app.listen(port, () => {
 
 setupFileRotationTimers();
 
-updateSystemGeneratedConfig(WEB_STATUS_API_ACCESS_TOKEN, (Math.random() + 1).toString(36).substring(5));
+updateSystemGeneratedConfig(WEB_STATUS_API_ACCESS_TOKEN, crypto.randomBytes(5).toString('hex'));
 
 export default app;
