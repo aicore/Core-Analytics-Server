@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "@aicore/linode-object-storage-lib": "1.0.5",
+    "clone-deep": "^4.0.1",
     "express": "4.17.2"
   }
 }

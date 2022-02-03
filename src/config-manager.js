@@ -19,6 +19,7 @@
 import fs from 'fs';
 import path from "path";
 import events from "events";
+import cloneDeep from 'clone-deep';
 import {writeAsJson, readJsonFile} from "./utils.js";
 
 const DEFAULT_CONFIG_FILE_PATH = path.resolve('analytics-config.json');
@@ -32,9 +33,19 @@ function onConfigEvent(eventType, cbFn) {
 let configFilePath = DEFAULT_CONFIG_FILE_PATH;
 let configuration = {};
 
+function _printConfig() {
+    let filteredConfig = cloneDeep(configuration);
+    if(filteredConfig.rotateDumpFiles && filteredConfig.rotateDumpFiles.storage){
+        filteredConfig.rotateDumpFiles.storage.accessKeyId = 'xxxx';
+        filteredConfig.rotateDumpFiles.storage.secretAccessKey = 'xxxx';
+    }
+    console.log("configuration updated: ", filteredConfig);
+}
+
 async function reloadConfigFile() {
     configuration = await readJsonFile(configFilePath);
     eventEmitter.emit(CONFIG_CHANGED_EVENT);
+    _printConfig();
 }
 
 reloadConfigFile();
