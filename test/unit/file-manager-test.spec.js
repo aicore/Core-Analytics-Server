@@ -35,8 +35,8 @@ describe('file-manager.js Tests', function() {
         expect(fileToUpload).to.be.not.null;
         let writtenDumpFile = await readJsonFile(fileToUpload.filePath);
         expect(writtenDumpFile["schemaVersion"]).to.equal(1);
-        expect(writtenDumpFile["unixTimestampUTCAtServer"]).to.be.lessThan(getUnixTimestampUTCNow());
-        expect(writtenDumpFile["clientAnalytics"][2]['endTime']).to.be.lessThan(getUnixTimestampUTCNow());
+        expect(writtenDumpFile["unixTimestampUTCAtServer"]).to.be.lessThanOrEqual(getUnixTimestampUTCNow());
+        expect(writtenDumpFile["clientAnalytics"][2]['endTime']).to.be.lessThanOrEqual(getUnixTimestampUTCNow());
         await deleteFile(fileToUpload.filePath);
     });
 
