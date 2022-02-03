@@ -1,15 +1,18 @@
 {
   "configVersion": 1,
-  "webDashboardEnabled": true,
-  "allowedAppNames": ["*"],
-  "rotateDumpFiles" : {
+  "webStatusApisEnabled": true,
+  "allowedAppNames": [
+    "*"
+  ],
+  "rotateDumpFiles": {
     "maxFileSizeBytes": 100000000,
     "rotateInEveryNSeconds": 600,
     "storage": {
-      "destination": "local"
+      "destination": "local",
+      "uploadRetryTimeSecs": 30
     }
   },
   "systemGenerated": {
-    "webDashboardAccessToken": "notGeneratedYet"
+    "webStatusApiAccessToken": "52ilyj4"
   }
 }

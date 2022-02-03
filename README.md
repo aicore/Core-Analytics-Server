@@ -26,7 +26,7 @@ changes for the new configuration to take effect. This will help reduce unintend
 
 ## Config fields
 1. `configVersion` : The version number for run time configuration as discussed above.
-2. `webDashboardEnabled` : `true/false` to enable or disable web dashboard
+2. `webStatusApisEnabled` : `true/false` to enable or disable web dashboard
 3. `systemGenerated` : The properties in this object are system generated and read only. It is used by the analytics server to communicate about the
 config changes to the user.
 4. `rotateDumpFiles`: Specifies details on how the analytics dump files are rotated. See below 
@@ -59,7 +59,8 @@ will be rotated when either of `maxFileSizeBytes` or `rotateInEveryNSeconds` thr
              ```
 
 ### systemGenerated configuration
-1. `webDashboardAccessToken` : a random token that can be used to access the web dashboard. This is reset everytime the web dashboard is disabled/enabled from the config file.
+1. `webStatusApiAccessToken` : a random token that can be used to access the `/status?webStatusApiAccessToken=xxxx` api.
+Enabled only if `webStatusApisEnabled` is set to true
 
 # Wiki Docs
 See wiki for more architecture and implementation details: https://github.com/aicore/Core-Analytics-Server/wiki

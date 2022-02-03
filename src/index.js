@@ -19,11 +19,25 @@
 import express from 'express';
 import {processDataFromClient} from "./analytics-data-manager.js";
 import {setupFileRotationTimers} from "./file-rotation-manager.js";
+import {updateSystemGeneratedConfig, getConfig, getSystemGeneratedConfig} from "./config-manager.js";
 
 const app = express();
 const port = 3000;
+const WEB_STATUS_API_ACCESS_TOKEN = "webStatusApiAccessToken";
+const WEB_STATUS_APIS_ENABLED = "webStatusApisEnabled";
 
 app.use(express.json()); // for parsing application/json
+
+app.get('/status', async function (req, res, next) {
+    if(getConfig(WEB_STATUS_APIS_ENABLED) !== true
+        || req.query["webStatusApiAccessToken"] !== getSystemGeneratedConfig(WEB_STATUS_API_ACCESS_TOKEN)){
+        res.status(401);
+        res.json({error: "Not Authorised to access server status"});
+        return;
+    }
+    res.status(200);
+    res.send("hello world");
+});
 
 app.post('/ingest', async function (req, res, next) {
     const response = await processDataFromClient(req.body);
@@ -36,5 +50,7 @@ app.listen(port, () => {
 });
 
 setupFileRotationTimers();
+
+updateSystemGeneratedConfig(WEB_STATUS_API_ACCESS_TOKEN, (Math.random() + 1).toString(36).substring(5));
 
 export default app;

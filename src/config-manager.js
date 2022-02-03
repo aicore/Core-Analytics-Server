@@ -51,17 +51,21 @@ async function reloadConfigFile() {
 reloadConfigFile();
 
 async function updateSystemGeneratedConfig(key, value) {
-    configuration.systemGenerated[key] = value;
-    eventEmitter.emit(CONFIG_CHANGED_EVENT);
+    await reloadConfigFile();
+    configuration["systemGenerated"][key] = value;
     await writeAsJson(configFilePath, configuration);
+    await reloadConfigFile();
 }
 
 function getConfig(key) {
     return configuration[key];
 }
 
-function getSystemGeneratedConfig() {
-    return configuration.systemGenerated;
+function getSystemGeneratedConfig(key) {
+    if(configuration["systemGenerated"]){
+        return configuration["systemGenerated"][key];
+    }
+    return undefined;
 }
 
 async function setConfigFilePath(newConfigFilePath) {
