@@ -66,7 +66,6 @@ describe('file-rotation-manager.js Tests', function() {
 
     afterEach(async function () {
         await deleteFile(TEST_CONFIG_FILE_PATH);
-        await stopFileRotationTimers();
     });
 
     after(async function () {
