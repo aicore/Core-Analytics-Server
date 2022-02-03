@@ -59,8 +59,8 @@ describe('config-manager.js Tests', function() {
     });
 
     it('Should get systemGenerated configs', async function() {
-        const sysGeneratedConfig = getSystemGeneratedConfig();
-        expect(sysGeneratedConfig["webDashboardAccessToken"]).to.exist;
+        const webStatusApiAccessToken = getSystemGeneratedConfig("webStatusApiAccessToken");
+        expect(webStatusApiAccessToken).to.exist;
     });
 
     it('Should update systemGenerated configs in file', async function() {
