@@ -18,7 +18,7 @@
 
 import express from 'express';
 import crypto from 'crypto';
-import {processDataFromClient} from "./analytics-data-manager.js";
+import {getServerStats, processDataFromClient} from "./analytics-data-manager.js";
 import {setupFileRotationTimers} from "./file-rotation-manager.js";
 import {updateSystemGeneratedConfig, getConfig, getSystemGeneratedConfig} from "./config-manager.js";
 
@@ -37,7 +37,7 @@ app.get('/status', async function (req, res, next) {
         return;
     }
     res.status(200);
-    res.send("hello world");
+    res.json(getServerStats());
 });
 
 app.post('/ingest', async function (req, res, next) {

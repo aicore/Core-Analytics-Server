@@ -104,9 +104,11 @@ async function _rotateDumpFile(appName) {
         await deleteFile(appFileHandle.filePath);
         if(_isLinodeStore()){
             await _uploadToLinode(compressedFilePath);
+            console.log(`Uploaded file ${compressedFilePath} to linode`);
             await deleteFile(compressedFilePath);
         } else if(_isNoneDestination()){
             await deleteFile(compressedFilePath);
+            console.log(`Deleted file ${compressedFilePath} as 'none' destination is specified`);
         } else if(!_isLocalDestination()){
             console.error(`unknown storage destination for ${appFileHandle.filePath}: appName:`,
                 rotateDumpFiles.storage.destination);
