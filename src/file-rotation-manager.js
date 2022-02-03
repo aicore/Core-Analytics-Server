@@ -66,19 +66,23 @@ function _isLinodeStore() {
     return rotateDumpFiles.storage.destination === "linode";
 }
 
+function _isNoneDestination() {
+    return rotateDumpFiles.storage.destination === "none";
+}
+
 async function _uploadToLinode(filePath) {
     try {
-        let x = await linodeModule.uploadFileToLinodeBucket(
+        await linodeModule.uploadFileToLinodeBucket(
             rotateDumpFiles.storage.accessKeyId,
             rotateDumpFiles.storage.secretAccessKey,
             rotateDumpFiles.storage.region,
             filePath,
             rotateDumpFiles.storage.bucket
         );
-        console.log(x);
     } catch (e) {
         uploadRetryQueue.unshift(filePath);
-        console.error(`file upload to linode failed for ${filePath}, will retry in ${UPLOAD_RETRY_TIME_SECONDS}S`, e);
+        console.error(`file upload to linode failed for ${filePath}, 
+        will retry in ${rotateDumpFiles.storage.uploadRetryTimeSecs}S`, e);
     }
 }
 
@@ -89,10 +93,11 @@ async function _rotateDumpFile(appName) {
         await deleteFile(appFileHandle.filePath);
         if(_isLinodeStore()){
             await _uploadToLinode(compressedFilePath);
-        } else if(!_isLocalDestination() || rotateDumpFiles.storage.destination === "none"){
             await deleteFile(compressedFilePath);
-        } else {
-            console.error(`unknown storage destination for ${appFileHandle.filePath}: `,
+        } else if(_isNoneDestination()){
+            await deleteFile(compressedFilePath);
+        } else if(!_isLocalDestination()){
+            console.error(`unknown storage destination for ${appFileHandle.filePath}: appName:`,
                 rotateDumpFiles.storage.destination);
         }
     }
