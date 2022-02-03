@@ -40,18 +40,20 @@ to persistent storage and a new dump file will be created to continue dumping.
 2. `rotateInEveryNSeconds`: The time in seconds after which the log file will be rotated. Note that the log file
 will be rotated when either of `maxFileSizeBytes` or `rotateInEveryNSeconds` threshold is breached.
    1. `storage`: Configuration on where to persist the rotated dump file.
-      1. `destination`: Can be `none` or `linode`. If the destination is `none`, the dumps will be persisted in the current machine.
-      2. If `destination` is `linode`, then provide linode object storage access config here.
-       ``` 
-      // Linode storage config example: 
-      "storage": {
-            "destination":"linode",
-            "accessKeyId":  "LinodeAccessKeyId",
-            "secretAccessKey":  "LinodeSecretAccessKey",
-            "region":  "LinodeRegion",
-            "bucket": "LinodeBucket"
-      }
-      ```
+      1. `destination`: Can be `none`, `local` or `linode`. 
+          2. If the destination is `local`, the dumps will be persisted in the current machine.
+          2. If the destination is `none`, the dumps will be deleted as soon as it is rotated.
+          4. If `destination` is `linode`, then provide linode object storage access config here.
+             ``` 
+             // Linode storage config example: 
+             "storage": {
+                "destination":"linode",
+                "accessKeyId":  "LinodeAccessKeyId",
+                "secretAccessKey":  "LinodeSecretAccessKey",
+                "region":  "LinodeRegion",
+                "bucket": "LinodeBucket"
+             }
+             ```
 
 ### systemGenerated configuration
 1. `webDashboardAccessToken` : a random token that can be used to access the web dashboard. This is reset everytime the web dashboard is disabled/enabled from the config file.

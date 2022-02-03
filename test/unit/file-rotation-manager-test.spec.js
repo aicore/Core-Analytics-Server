@@ -28,11 +28,12 @@ import {
     onFileRotationEvent,
     ALL_DUMPS_ROTATED_EVENT,
     APP_DUMP_ROTATED_EVENT,
-    setupFileRotationTimers, stopFileRotationTimers, rotateAllDumpFiles
+    setupFileRotationTimers, stopFileRotationTimers, rotateAllDumpFiles,
+    UPLOAD_RETRIED_EVENT
 } from "../../src/file-rotation-manager.js";
 import {deleteFile, writeAsJson, readJsonFile, readTextFile} from "../../src/utils.js";
 import {pushDataForApp} from "../../src/file-manager.js";
-import {sleep} from "./test-utils.js";
+import {sleep, rmrf} from "./test-utils.js";
 import path from "path";
 
 let expect = chai.expect;
@@ -56,7 +57,7 @@ describe('file-rotation-manager.js Tests', function() {
             maxFileSizeBytes: 100000000,
             rotateInEveryNSeconds: 600,
             storage: {
-                destination: "yo"
+                destination: "none"
             }
         };
         await _writeDefaultConfigTestFile();
@@ -72,6 +73,7 @@ describe('file-rotation-manager.js Tests', function() {
         await setConfigFilePath(DEFAULT_CONFIG_FILE_PATH);
         await deleteFile(TEST_CONFIG_FILE_PATH);
         await stopFileRotationTimers();
+        await rmrf('data');
     });
 
     it('Should rotate all files on every time out', function(done) {
@@ -80,7 +82,7 @@ describe('file-rotation-manager.js Tests', function() {
                 maxFileSizeBytes: 100000000,
                 rotateInEveryNSeconds: .2,
                 storage: {
-                    destination: "yo"
+                    destination: "none"
                 }
             };
             await _writeDefaultConfigTestFile();
@@ -110,7 +112,7 @@ describe('file-rotation-manager.js Tests', function() {
                 maxFileSizeBytes: 1000,
                 rotateInEveryNSeconds: 600,
                 storage: {
-                    destination: "yo"
+                    destination: "none"
                 }
             };
             await _writeDefaultConfigTestFile();
@@ -129,6 +131,36 @@ describe('file-rotation-manager.js Tests', function() {
             expect(numTimeFileRotated).to.equal(1);
             expect(rotatedAppName).to.equal("app1");
             await rotateAllDumpFiles();
+            done();
+        }
+        f();
+    });
+
+    it('Should upload file on bytes exceeded to linode', function(done) {
+        async function f() {
+            defaultConfig["rotateDumpFiles"] = {
+                maxFileSizeBytes: 1000,
+                rotateInEveryNSeconds: 600,
+                storage: {
+                    destination: "linode",
+                    accessKeyId: "LinodeAccessKeyId",
+                    secretAccessKey: "LinodeSecretAccessKey",
+                    region: "LinodeRegion",
+                    bucket: "LinodeBucket"
+                }
+            };
+            await _writeDefaultConfigTestFile();
+            let uploadRetried = 1;
+            await rotateAllDumpFiles();
+
+            onFileRotationEvent(UPLOAD_RETRIED_EVENT, async ()=>{
+                uploadRetried = uploadRetried + 1;
+            });
+            let sample = await readTextFile('package.json');
+            await pushDataForApp("app1", sample);
+            await pushDataForApp("app2", "world");
+            await sleep(100);
+            expect(uploadRetried).to.equal(1);
             done();
         }
         f();

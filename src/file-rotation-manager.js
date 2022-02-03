@@ -21,9 +21,12 @@ import {getAllAppNames, getDumpFileToUpload, onFileEvent, DUMP_FILE_UPDATED_EVEN
 import {compressFile} from "./compression-manager.js";
 import {deleteFile} from "./utils.js";
 import events from "events";
+import linodeModule from '@aicore/linode-object-storage-lib';
 
-const ALL_DUMPS_ROTATED_EVENT = 'ALL_DUMPS_ROTATED';
-const APP_DUMP_ROTATED_EVENT = 'APP_DUMP_ROTATED';
+const UPLOAD_RETRY_TIME_SECONDS = 30;
+const ALL_DUMPS_ROTATED_EVENT = 'ALL_DUMPS_ROTATED_EVENT';
+const APP_DUMP_ROTATED_EVENT = 'APP_DUMP_ROTATED_EVENT';
+const UPLOAD_RETRIED_EVENT = 'UPLOAD_RETRIED_EVENT';
 const eventEmitter = new events();
 
 function onFileRotationEvent(eventType, cbFn) {
@@ -41,8 +44,9 @@ let rotateDumpFiles = {
         bucket: "LinodeBucket"
     }
 };
-
+let uploadRetryQueue = [];
 let interval = null;
+let uploadRetryInterval = null;
 
 async function rotateAllDumpFiles(){
     let appNames = getAllAppNames();
@@ -54,18 +58,42 @@ async function rotateAllDumpFiles(){
     }
 }
 
-function isLocalDestination() {
-    return rotateDumpFiles.storage.destination === "none";
+function _isLocalDestination() {
+    return rotateDumpFiles.storage.destination === "local";
+}
+
+function _isLinodeStore() {
+    return rotateDumpFiles.storage.destination === "linode";
+}
+
+async function _uploadToLinode(filePath) {
+    try {
+        let x = await linodeModule.uploadFileToLinodeBucket(
+            rotateDumpFiles.storage.accessKeyId,
+            rotateDumpFiles.storage.secretAccessKey,
+            rotateDumpFiles.storage.region,
+            filePath,
+            rotateDumpFiles.storage.bucket
+        );
+        console.log(x);
+    } catch (e) {
+        uploadRetryQueue.unshift(filePath);
+        console.error(`file upload to linode failed for ${filePath}, will retry in ${UPLOAD_RETRY_TIME_SECONDS}S`, e);
+    }
 }
 
 async function _rotateDumpFile(appName) {
     let appFileHandle = await getDumpFileToUpload(appName);
     if(appFileHandle){
         let compressedFilePath = await compressFile(appFileHandle.filePath);
-        // upload file to object storage
         await deleteFile(appFileHandle.filePath);
-        if(!isLocalDestination()){
+        if(_isLinodeStore()){
+            await _uploadToLinode(compressedFilePath);
+        } else if(!_isLocalDestination() || rotateDumpFiles.storage.destination === "none"){
             await deleteFile(compressedFilePath);
+        } else {
+            console.error(`unknown storage destination for ${appFileHandle.filePath}: `,
+                rotateDumpFiles.storage.destination);
         }
     }
     eventEmitter.emit(APP_DUMP_ROTATED_EVENT, appFileHandle);
@@ -73,6 +101,8 @@ async function _rotateDumpFile(appName) {
 
 async function _refreshRotationConfig() {
     rotateDumpFiles = getConfig('rotateDumpFiles') || rotateDumpFiles;
+    rotateDumpFiles.storage.uploadRetryTimeSecs = rotateDumpFiles.storage.uploadRetryTimeSecs
+        || UPLOAD_RETRY_TIME_SECONDS;
     await setupFileRotationTimers();
 }
 
@@ -91,6 +121,17 @@ async function setupFileRotationTimers() {
         clearInterval(interval);
     }
     interval = setInterval(rotateAllDumpFiles, rotateDumpFiles.rotateInEveryNSeconds * 1000);
+
+    if(uploadRetryInterval){
+        clearInterval(uploadRetryInterval);
+    }
+    uploadRetryInterval = setInterval(async ()=>{
+        if(uploadRetryQueue.length > 0){
+            await _uploadToLinode(uploadRetryQueue.pop());
+            eventEmitter.emit(UPLOAD_RETRIED_EVENT);
+        }
+    }, rotateDumpFiles.storage.uploadRetryTimeSecs * 1000);
+
     await rotateAllDumpFiles();
 }
 
@@ -98,7 +139,11 @@ async function stopFileRotationTimers() {
     if(interval){
         clearInterval(interval);
     }
+    if(uploadRetryInterval){
+        clearInterval(uploadRetryInterval);
+    }
     interval = null;
+    uploadRetryInterval = null;
     await rotateAllDumpFiles();
 }
 
@@ -107,6 +152,7 @@ export {
     stopFileRotationTimers,
     onFileRotationEvent,
     rotateAllDumpFiles,
+    UPLOAD_RETRIED_EVENT,
     ALL_DUMPS_ROTATED_EVENT,
     APP_DUMP_ROTATED_EVENT
 };
