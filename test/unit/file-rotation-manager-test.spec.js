@@ -106,13 +106,13 @@ describe('file-rotation-manager.js Tests', function() {
         f();
     });
 
-    it('Should rotate file on bytes exceeded', function(done) {
+    it('Should rotate file on bytes exceeded even if destination is unknown', function(done) {
         async function f() {
             defaultConfig["rotateDumpFiles"] = {
                 maxFileSizeBytes: 1000,
                 rotateInEveryNSeconds: 600,
                 storage: {
-                    destination: "none"
+                    destination: "lols"
                 }
             };
             await _writeDefaultConfigTestFile();
@@ -146,23 +146,26 @@ describe('file-rotation-manager.js Tests', function() {
                     accessKeyId: "LinodeAccessKeyId",
                     secretAccessKey: "LinodeSecretAccessKey",
                     region: "LinodeRegion",
-                    bucket: "LinodeBucket"
+                    bucket: "LinodeBucket",
+                    uploadRetryTimeSecs: 1
                 }
             };
             await _writeDefaultConfigTestFile();
-            let uploadRetried = 1;
+            let uploadRetried = false;
             await rotateAllDumpFiles();
 
             onFileRotationEvent(UPLOAD_RETRIED_EVENT, async ()=>{
-                uploadRetried = uploadRetried + 1;
+                uploadRetried = true;
             });
             let sample = await readTextFile('package.json');
             await pushDataForApp("app1", sample);
             await pushDataForApp("app2", "world");
-            await sleep(100);
-            expect(uploadRetried).to.equal(1);
+            while(!uploadRetried){
+                await sleep(100);
+            }
+            expect(uploadRetried).to.equal(true);
             done();
         }
         f();
-    });
+    }).timeout(10000);
 });
