@@ -42,8 +42,10 @@ will be rotated when either of `maxFileSizeBytes` or `rotateInEveryNSeconds` thr
    1. `storage`: Configuration on where to persist the rotated dump file.
       1. `destination`: Can be `none`, `local` or `linode`. 
           2. If the destination is `local`, the dumps will be persisted in the current machine.
-          2. If the destination is `none`, the dumps will be deleted as soon as it is rotated.
+          3. If the destination is `none`, the dumps will be deleted as soon as it is rotated.
           4. If `destination` is `linode`, then provide linode object storage access config here.
+          5. `uploadRetryTimeSecs`, the system will try to retry a failed upload to linode based on this timeout. 
+         default is 30 seconds.
              ``` 
              // Linode storage config example: 
              "storage": {
@@ -51,7 +53,8 @@ will be rotated when either of `maxFileSizeBytes` or `rotateInEveryNSeconds` thr
                 "accessKeyId":  "LinodeAccessKeyId",
                 "secretAccessKey":  "LinodeSecretAccessKey",
                 "region":  "LinodeRegion",
-                "bucket": "LinodeBucket"
+                "bucket": "LinodeBucket",
+                "uploadRetryTimeSecs": 30
              }
              ```
 
