@@ -20,7 +20,7 @@
 /*global describe, it, after*/
 
 import * as chai from 'chai';
-import {processDataFromClient} from "../../src/analytics-data-manager.js";
+import {processDataFromClient, getServerStats} from "../../src/analytics-data-manager.js";
 import {onFileEvent, DUMP_FILE_UPDATED_EVENT} from "../../src/file-manager.js";
 import {rmrf, sleep} from "./test-utils.js";
 
@@ -75,5 +75,11 @@ describe('analytics-data-manager.js Tests', function() {
         expect(response.statusCode).to.equal(200);
         expect(fileUpdated).to.be.true;
         expect(response.returnData.errors.length).to.equal(0);
+    });
+
+    it('should get server stats', async function() {
+        const response = getServerStats();
+
+        expect(response).to.exist;
     });
 });

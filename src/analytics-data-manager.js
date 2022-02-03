@@ -88,6 +88,12 @@ function validateInput(clientData) {
     return errors;
 }
 
+function getServerStats() {
+    return{
+
+    };
+}
+
 async function processDataFromClient(clientData) {
     const errors = validateInput(clientData);
     if(errors.length === 0){
@@ -98,5 +104,6 @@ async function processDataFromClient(clientData) {
 }
 
 export {
-    processDataFromClient
+    processDataFromClient,
+    getServerStats
 };

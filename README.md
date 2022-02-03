@@ -16,6 +16,11 @@ Simple, privacy first, and scalable Analytics server.
   <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_Core-Analytics-Server&metric=sqale_index" alt="Technical debt" />
 </a>
 
+# Tenets
+1. Light weight and specialised for massive scale data ingestion with a single node.
+2. No external dependencies or database installs needed, point to an object storage api and it just works.
+3. Dynamically configurable - 0 restarts to update configuration.
+
 # Usage
 
 # Config
