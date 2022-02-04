@@ -133,4 +133,53 @@ describe('analytics-data-manager.js Tests', function() {
         timeArray = response['testApp.Invalid_events'];
         expect(timeArray[timeArray.length-1]).to.equal(1);
     });
+
+    it('should get server ss,mm,hh,dd metrics', async function() {
+        clock = FakeTimers.install();
+        setupStatusManagerTimers();
+        const sampleData = {
+            "schemaVersion": 1,
+            "appName": "testApp",
+            "uuid": "uuid",
+            "sessionID": "session1",
+            "granularitySec": 3,
+            "unixTimestampUTC": 1643043376,
+            "numEventsTotal": 5,
+            "events": {
+                "some": "events"
+            }
+        };
+        await processDataFromClient(sampleData);
+        await processDataFromClient(sampleData);
+        await clock.tickAsync("1");
+        await processDataFromClient(sampleData);
+        await clock.tickAsync("1");
+
+        let response = getServerStats('ss');
+        expect(response).to.exist;
+        let timeArray = response['testApp.totalNumPostRequests'];
+        expect(timeArray[timeArray.length-1]).to.equal(1);
+        expect(timeArray[timeArray.length-2]).to.equal(2);
+        timeArray = response['testApp.totalErrors'];
+        expect(timeArray).to.be.undefined;
+        timeArray = response['testApp.numEventsTotal'];
+        expect(timeArray[timeArray.length-2]).to.equal(10);
+
+        response = getServerStats('mm');
+        expect(response).to.exist;
+        timeArray = response['testApp.totalNumPostRequests'];
+        expect(timeArray[timeArray.length-1]).to.equal(0);
+
+        response = getServerStats('hh');
+        expect(response).to.exist;
+        timeArray = response['testApp.totalNumPostRequests'];
+        expect(timeArray[timeArray.length-1]).to.equal(0);
+        expect(timeArray.length).to.equal(24);
+
+        response = getServerStats('dd');
+        expect(response).to.exist;
+        timeArray = response['testApp.totalNumPostRequests'];
+        expect(timeArray[timeArray.length-1]).to.equal(0);
+        expect(timeArray.length).to.equal(360);
+    });
 });

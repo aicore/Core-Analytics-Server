@@ -40,7 +40,13 @@
 
 import {getConfig} from "./config-manager.js";
 import {pushDataForApp} from "./file-manager.js";
-import {getAllSecondsMetric, addMetricCount} from "./status-manager.js";
+import {
+    getAllSecondsMetric,
+    addMetricCount,
+    getAllMinutesMetric,
+    getAllHoursMetric,
+    getAllDaysMetric
+} from "./status-manager.js";
 
 function _getSuccessResponse() {
     return {
@@ -102,7 +108,15 @@ function validateInput(clientData) {
 }
 
 function getServerStats(timeFrame) {
-    if(!timeFrame) {
+    if(timeFrame==="ss") {
+        return getAllSecondsMetric();
+    } else if(timeFrame==="mm") {
+        return getAllMinutesMetric();
+    } else if(timeFrame==="hh") {
+        return getAllHoursMetric();
+    } else if(timeFrame==="dd") {
+        return getAllDaysMetric();
+    } else {
         return getAllSecondsMetric();
     }
 }
