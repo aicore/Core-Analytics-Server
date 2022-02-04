@@ -20,6 +20,7 @@
             document.getElementById("bDay").className = "button-time";
             document.getElementById("bYear").className = "button-time";
             document.getElementById(id).className = "button-time-selected";
+            updateAllGraphs();
         }
         function AutoReloadChanged() {
             autoReload = document.getElementById("autoReload").checked;
