@@ -42,6 +42,8 @@ app.get('/status', async function (req, res, next) {
     res.json(getServerStats(req.query[QUERY_STRING_TIME_FRAME]));
 });
 
+app.use('/', express.static('www'));
+
 app.post('/ingest', async function (req, res, next) {
     const response = await processDataFromClient(req.body);
     // req.headers["x-real-ip"] || req.headers['X-Forwarded-For'] || request.socket.remoteAddress

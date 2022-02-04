@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Analytics Server Status</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript">
+        const MINUTE_MODE = 'MINUTE';
+        const HOUR_MODE = 'HOUR';
+        const DAY_MODE = 'DAY';
+        const YEAR_MODE = 'YEAR';
+        let currentTimeWindowMode=MINUTE_MODE;
+        let autoReload = false;
+
+        function updateTimeSelection(mode, id) {
+            currentTimeWindowMode = mode;
+            document.getElementById("bMin").className = "button-time";
+            document.getElementById("bHour").className = "button-time";
+            document.getElementById("bDay").className = "button-time";
+            document.getElementById("bYear").className = "button-time";
+            document.getElementById(id).className = "button-time-selected";
+        }
+        function AutoReloadChanged() {
+            autoReload = document.getElementById("autoReload").checked;
+            console.log(autoReload);
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+Apps: <select name="App Names" id="appNames">
+    <option value="all">all</option>
+</select>
+<span style="float: right;">
+    Auto Reload: <label class="switch">
+    <input type="checkbox" id="autoReload" onclick="AutoReloadChanged()">
+    <span class="slider round"></span>
+</label>
+</span>
+<button id="bMin" onclick="updateTimeSelection(MINUTE_MODE, 'bMin')" class="button-time-selected">Last minute</button>
+<button id="bHour" onclick="updateTimeSelection(HOUR_MODE, 'bHour')" class="button-time">Last hour</button>
+<button id="bDay" onclick="updateTimeSelection(DAY_MODE, 'bDay')" class="button-time">Last day</button>
+<button id="bYear" onclick="updateTimeSelection(YEAR_MODE, 'bYear')" class="button-time">Last year</button>
+
+<canvas id="myChart" height="40"></canvas>
+
+<script>
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
