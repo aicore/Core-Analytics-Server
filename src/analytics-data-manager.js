@@ -40,6 +40,7 @@
 
 import {getConfig} from "./config-manager.js";
 import {pushDataForApp} from "./file-manager.js";
+import {getAllSecondsMetric, addMetricCount} from "./status-manager.js";
 
 function _getSuccessResponse() {
     return {
@@ -74,42 +75,58 @@ function isAllowedAppName(appName) {
 function validateInput(clientData) {
     let errors = [];
     if(clientData["schemaVersion"] !== 1){
-        errors.push("Invalid schemaVersion");
+        errors.push("Invalid_schemaVersion");
     }
     if(!isAllowedAppName(clientData["appName"])){
-        errors.push("Invalid appName");
+        errors.push("Invalid_appName");
     }
     if(!clientData["uuid"]){
-        errors.push("Invalid uuid");
+        errors.push("Invalid_uuid");
     }
     if(!clientData["sessionID"]){
-        errors.push("Invalid sessionID");
+        errors.push("Invalid_sessionID");
     }
     if(!clientData["granularitySec"]){
-        errors.push("Invalid granularitySec");
+        errors.push("Invalid_granularitySec");
     }
     if(!clientData["unixTimestampUTC"]){
-        errors.push("Invalid unixTimestampUTC");
+        errors.push("Invalid_unixTimestampUTC");
     }
     if(!clientData["numEventsTotal"]){
-        errors.push("Invalid numEventsTotal");
+        errors.push("Invalid_numEventsTotal");
     }
     if(!clientData["events"]){
-        errors.push("Invalid events");
+        errors.push("Invalid_events");
     }
     return errors;
 }
 
-function getServerStats() {
-    return{
+function getServerStats(timeFrame) {
+    if(!timeFrame) {
+        return getAllSecondsMetric();
+    }
+}
 
-    };
+function _updateServerStats(clientData) {
+    addMetricCount(`${clientData["appName"]}.numEventsTotal`, clientData["numEventsTotal"]);
+}
+
+function _updateServerErrorStats(appName, errorList) {
+    if(errorList.length > 0){
+        addMetricCount(`${appName}.totalErrors`, errorList.length);
+    }
+    for(let error of errorList){
+        addMetricCount(`${appName}.${error}`, 1);
+    }
 }
 
 async function processDataFromClient(clientData) {
     const errors = validateInput(clientData);
+    _updateServerErrorStats(clientData["appName"], errors);
+    addMetricCount(`${clientData["appName"]}.totalNumPostRequests`, 1);
     if(errors.length === 0){
         await pushDataForApp(clientData["appName"], JSON.stringify(clientData));
+        _updateServerStats(clientData);
         return _getSuccessResponse();
     }
     return _getFailureResponse(400, errors);
