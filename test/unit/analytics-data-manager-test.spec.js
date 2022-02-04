@@ -37,7 +37,11 @@ describe('analytics-data-manager.js Tests', function() {
             "schemaVersion": 2,
             "appName": "testApp",
             "uuid": "default",
-            "sessionID": "def"
+            "sessionID": "def",
+            "granularitySec": 3,
+            "unixTimestampUTC": 1643043376,
+            "numEventsTotal": 5,
+            "events": {}
         });
 
         expect(response.statusCode).to.equal(400);
@@ -45,7 +49,7 @@ describe('analytics-data-manager.js Tests', function() {
         expect(response.returnData.errors.length).to.equal(1);
     });
 
-    it('should fail validation if app name is not present or uuid or sessionID is empty', async function() {
+    it('should fail validation if required fields is not present or empty', async function() {
         const response = await processDataFromClient({
             "schemaVersion": 1,
             "uuid": "",
@@ -56,7 +60,11 @@ describe('analytics-data-manager.js Tests', function() {
         expect(response.returnData.errors.includes("Invalid appName")).to.be.true;
         expect(response.returnData.errors.includes("Invalid uuid")).to.be.true;
         expect(response.returnData.errors.includes("Invalid sessionID")).to.be.true;
-        expect(response.returnData.errors.length).to.equal(3);
+        expect(response.returnData.errors.includes("Invalid granularitySec")).to.be.true;
+        expect(response.returnData.errors.includes("Invalid unixTimestampUTC")).to.be.true;
+        expect(response.returnData.errors.includes("Invalid numEventsTotal")).to.be.true;
+        expect(response.returnData.errors.includes("Invalid events")).to.be.true;
+        expect(response.returnData.errors.length).to.equal(7);
     });
 
     it('should push to dump file if validation success', async function() {
@@ -68,7 +76,11 @@ describe('analytics-data-manager.js Tests', function() {
             "schemaVersion": 1,
             "appName": "testApp",
             "uuid": "uuid",
-            "sessionID": "session1"
+            "sessionID": "session1",
+            "granularitySec": 3,
+            "unixTimestampUTC": 1643043376,
+            "numEventsTotal": 5,
+            "events": {}
         });
 
         await sleep(100);

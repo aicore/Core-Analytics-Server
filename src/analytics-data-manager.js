@@ -85,6 +85,18 @@ function validateInput(clientData) {
     if(!clientData["sessionID"]){
         errors.push("Invalid sessionID");
     }
+    if(!clientData["granularitySec"]){
+        errors.push("Invalid granularitySec");
+    }
+    if(!clientData["unixTimestampUTC"]){
+        errors.push("Invalid unixTimestampUTC");
+    }
+    if(!clientData["numEventsTotal"]){
+        errors.push("Invalid numEventsTotal");
+    }
+    if(!clientData["events"]){
+        errors.push("Invalid events");
+    }
     return errors;
 }
 
