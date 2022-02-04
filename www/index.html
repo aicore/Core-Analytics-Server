@@ -5,7 +5,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="text/javascript">
         const SECOND = 1000;
-        const MINUTE_MODE_TIMER = 5*SECOND;
+        const MINUTE_MODE_TIMER = 3*SECOND;
         const HOUR_MODE_TIMER = SECOND*60;
         const DAY_MODE_TIMER = HOUR_MODE_TIMER*24;
         const YEAR_MODE_TIMER = DAY_MODE_TIMER*360;
@@ -37,7 +37,7 @@
 </head>
 <body>
     Apps:
-    <select name="App Names" id="appNames">
+    <select name="App Names" id="appNames" onchange="currentApp=this.value;updateAllGraphs();">
         <option value="all">all</option>
     </select>
     <span style="float: right;">
@@ -54,7 +54,9 @@
     <button id="bDay" onclick="updateTimeSelection(DAY_MODE_TIMER, 'bDay')" class="button-time">Last day</button>
     <button id="bYear" onclick="updateTimeSelection(YEAR_MODE_TIMER, 'bYear')" class="button-time">Last year</button>
 
+    <h2>Total number of post requests</h2>
     <canvas id="totalNumPostRequests" height="50%"></canvas>
+
     <canvas id="totalNumPostRequests1" height="50%"></canvas>
     <canvas id="totalNumPostRequests2" height="50%"></canvas>
 
