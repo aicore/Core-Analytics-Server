@@ -50,15 +50,28 @@ function updateAppsList(jsonData) {
 }
 
 function updateGraphs(jsonData) {
-    console.log(jsonData);
+    const labelArray = [];
+    const dataArray = [];
     for(let key of Object.keys(jsonData)){
         let newKey = key.split(".");
-        if(newKey[0] === currentApp){
-            console.log(newKey);
+        if(newKey[0] === currentApp && newKey[1] === 'errors'){
+            let errorType = newKey[2];
+            labelArray.push(errorType);
+            const sum = jsonData[key].reduce((partialSum, a) => partialSum + a, 0);
+            dataArray.push(sum);
         }
     }
+    drawChart(`errorTypes`,
+        "Type of errors", dataArray,
+        getTimeAxis(), "count", labelArray, 'bar');
     drawChart(`totalNumPostRequests`,
         "Total post requests", jsonData[`${currentApp}.totalNumPostRequests`] ,
+        getTimeAxis(), "count");
+    drawChart(`numEventsTotal`,
+        "Total number of events", jsonData[`${currentApp}.numEventsTotal`] ,
+        getTimeAxis(), "count");
+    drawChart(`totalErrors`,
+        "Total number of errors", jsonData[`${currentApp}.totalErrors`] ,
         getTimeAxis(), "count");
 }
 
@@ -96,7 +109,7 @@ function setData(chart, xAxisTitle, label, data) {
     chart.update();
 }
 
-function drawChart(id, graphLabel, dataArray, xAxisTitle, yAxisTitle, xAxisArray) {
+function drawChart(id, graphLabel, dataArray, xAxisTitle, yAxisTitle, xAxisArray, type) {
     const canvasElement = window.document.getElementById(id);
     const ctx = canvasElement.getContext('2d');
     if(!xAxisArray){
@@ -109,8 +122,11 @@ function drawChart(id, graphLabel, dataArray, xAxisTitle, yAxisTitle, xAxisArray
         setData(canvasElement.chart, xAxisTitle, xAxisArray, dataArray);
         return;
     }
+    if(!type){
+        type='line';
+    }
     canvasElement.chart = new window.Chart(ctx, {
-        type: 'line',
+        type: type,
         data: {
             labels: xAxisArray,
             datasets: [{
