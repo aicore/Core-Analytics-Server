@@ -128,9 +128,9 @@ describe('analytics-data-manager.js Tests', function() {
         expect(timeArray[timeArray.length-2]).to.equal(2);
         timeArray = response['testApp.totalErrors'];
         expect(timeArray[timeArray.length-1]).to.equal(2);
-        timeArray = response['testApp.Invalid_numEventsTotal'];
+        timeArray = response['testApp.errors.Invalid_numEventsTotal'];
         expect(timeArray[timeArray.length-1]).to.equal(1);
-        timeArray = response['testApp.Invalid_events'];
+        timeArray = response['testApp.errors.Invalid_events'];
         expect(timeArray[timeArray.length-1]).to.equal(1);
     });
 

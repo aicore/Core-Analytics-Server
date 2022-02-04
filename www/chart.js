@@ -1,4 +1,4 @@
-let currentApp = localStorage.getItem("currentApp") || "none";
+let currentApp = localStorage.getItem("currentApp");
 let appsList = [];
 let accessKey = localStorage.getItem("accessKey") || "nope";
 
@@ -8,6 +8,16 @@ function getMode() {
         case HOUR_MODE_TIMER: return 'mm';
         case DAY_MODE_TIMER: return 'hh';
         case YEAR_MODE_TIMER: return 'dd';
+        default: return 'ss';
+    }
+}
+
+function getTimeAxis() {
+    switch (currentTimeWindowMode) {
+        case MINUTE_MODE_TIMER: return 'Last 60 Seconds';
+        case HOUR_MODE_TIMER: return 'Last 60 Minutes';
+        case DAY_MODE_TIMER: return 'Last 24 Hours';
+        case YEAR_MODE_TIMER: return 'Last 360 Days';
         default: return 'ss';
     }
 }
@@ -32,8 +42,26 @@ function updateAppsList(jsonData) {
             appNamesSelector.add(option);
         }
     }
+    if(!currentApp){
+        currentApp = insertedKeys[0];
+    }
+    appNamesSelector.value = currentApp;
     localStorage.setItem("currentApp", currentApp);
 }
+
+function updateGraphs(jsonData) {
+    console.log(jsonData);
+    for(let key of Object.keys(jsonData)){
+        let newKey = key.split(".");
+        if(newKey[0] === currentApp){
+            console.log(newKey);
+        }
+    }
+    drawChart(`totalNumPostRequests`,
+        "Total post requests", jsonData[`${currentApp}.totalNumPostRequests`] ,
+        getTimeAxis(), "count");
+}
+
 function updateAllGraphs() {
     window.fetch(`/status?webStatusApiAccessToken=${accessKey}&timeFrame=${getMode()}`)
         .then(async (response) => {
@@ -46,6 +74,7 @@ function updateAllGraphs() {
                 }
             } else if(response.ok) {
                 updateAppsList(jsonData);
+                updateGraphs(jsonData);
             }
             return jsonData;
         })
@@ -54,15 +83,33 @@ function updateAllGraphs() {
         });
 }
 
+function setData(chart, xAxisTitle, label, data) {
+    chart.data.labels=[];
+    chart.data.datasets.forEach((dataset) => {
+        dataset.data=[];
+    });
+    chart.data.labels=chart.data.labels.concat(label);
+    chart.data.datasets.forEach((dataset) => {
+        dataset.data = dataset.data.concat(data);
+    });
+    chart.options.scales.xAxes.title.text = xAxisTitle;
+    chart.update();
+}
+
 function drawChart(id, graphLabel, dataArray, xAxisTitle, yAxisTitle, xAxisArray) {
-    const ctx = window.document.getElementById(id).getContext('2d');
+    const canvasElement = window.document.getElementById(id);
+    const ctx = canvasElement.getContext('2d');
     if(!xAxisArray){
         xAxisArray = [];
         for(let i=0; i<dataArray.length; i++){
             xAxisArray.unshift(i);
         }
     }
-    new window.Chart(ctx, {
+    if(canvasElement.chart){
+        setData(canvasElement.chart, xAxisTitle, xAxisArray, dataArray);
+        return;
+    }
+    canvasElement.chart = new window.Chart(ctx, {
         type: 'line',
         data: {
             labels: xAxisArray,
@@ -97,12 +144,10 @@ function drawChart(id, graphLabel, dataArray, xAxisTitle, yAxisTitle, xAxisArray
                         }
                     }
                 }
-            }
+            },
+            animation: false
         }
     });
 }
 
-drawChart("totalNumPostRequests", "yo", [1,2],"seconds", "count");
-drawChart("totalNumPostRequests1", "hehe", [1,2,3], "min", "count");
-drawChart("totalNumPostRequests2", "seconds", [1,2,3,5],"hour");
 updateAllGraphs();

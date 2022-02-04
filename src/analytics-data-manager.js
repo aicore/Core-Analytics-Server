@@ -128,9 +128,9 @@ function _updateServerStats(clientData) {
 function _updateServerErrorStats(appName, errorList) {
     if(errorList.length > 0){
         addMetricCount(`${appName}.totalErrors`, errorList.length);
-    }
-    for(let error of errorList){
-        addMetricCount(`${appName}.${error}`, 1);
+        for(let error of errorList){
+            addMetricCount(`${appName}.errors.${error}`, 1);
+        }
     }
 }
 
