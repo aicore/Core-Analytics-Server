@@ -1,19 +1,38 @@
-let currentApp = "all";
+let currentApp = localStorage.getItem("currentApp") || "none";
 let appsList = [];
-let accessKey = "nope";
+let accessKey = localStorage.getItem("accessKey") || "nope";
 
 function getMode() {
-    switch (window.currentTimeWindowMode) {
-        case window.MINUTE_MODE_TIMER: return 'ss';
-        case window.HOUR_MODE_TIMER: return 'mm';
-        case window.DAY_MODE_TIMER: return 'hh';
-        case window.YEAR_MODE_TIMER: return 'yy';
+    switch (currentTimeWindowMode) {
+        case MINUTE_MODE_TIMER: return 'ss';
+        case HOUR_MODE_TIMER: return 'mm';
+        case DAY_MODE_TIMER: return 'hh';
+        case YEAR_MODE_TIMER: return 'dd';
         default: return 'ss';
     }
 }
 
+function removeOptions(selectElement) {
+    var i, L = selectElement.options.length - 1;
+    for(i = L; i >= 0; i--) {
+        selectElement.remove(i);
+    }
+}
+
 function updateAppsList(jsonData) {
-    console.log(jsonData);
+    let appNamesSelector = document.getElementById("appNames");
+    removeOptions(appNamesSelector);
+    let insertedKeys = [];
+    for(let key of Object.keys(jsonData)){
+        let option = document.createElement("option");
+        let newKey = key.split(".")[0];
+        if(!insertedKeys.includes(newKey)){
+            option.text = newKey;
+            insertedKeys.push(newKey);
+            appNamesSelector.add(option);
+        }
+    }
+    localStorage.setItem("currentApp", currentApp);
 }
 function updateAllGraphs() {
     window.fetch(`/status?webStatusApiAccessToken=${accessKey}&timeFrame=${getMode()}`)
@@ -22,6 +41,7 @@ function updateAllGraphs() {
             if (response.status === 401) {
                 accessKey = window.prompt('Please enter webStatusApiAccessToken(can be found in analytics-config.json): ');
                 if(accessKey){
+                    localStorage.setItem("accessKey", accessKey);
                     updateAllGraphs();
                 }
             } else if(response.ok) {
