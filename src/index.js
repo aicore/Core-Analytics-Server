@@ -21,10 +21,12 @@ import crypto from 'crypto';
 import {getServerStats, processDataFromClient} from "./analytics-data-manager.js";
 import {setupFileRotationTimers} from "./file-rotation-manager.js";
 import {updateSystemGeneratedConfig, getConfig, getSystemGeneratedConfig} from "./config-manager.js";
+import {setupStatusManagerTimers} from "./status-manager.js";
 
 const app = express();
 const port = 3000;
 const WEB_STATUS_API_ACCESS_TOKEN = "webStatusApiAccessToken";
+const QUERY_STRING_TIME_FRAME = "timeFrame";
 const WEB_STATUS_APIS_ENABLED = "webStatusApisEnabled";
 
 app.use(express.json()); // for parsing application/json
@@ -37,11 +39,13 @@ app.get('/status', async function (req, res, next) {
         return;
     }
     res.status(200);
-    res.json(getServerStats());
+    res.json(getServerStats(req.query[QUERY_STRING_TIME_FRAME]));
 });
 
 app.post('/ingest', async function (req, res, next) {
     const response = await processDataFromClient(req.body);
+    // req.headers["x-real-ip"] || req.headers['X-Forwarded-For'] || request.socket.remoteAddress
+    // to get ip address from loadbalancer.
     res.status(response.statusCode);
     res.json(response.returnData);
 });
@@ -51,6 +55,7 @@ app.listen(port, () => {
 });
 
 setupFileRotationTimers();
+setupStatusManagerTimers();
 
 updateSystemGeneratedConfig(WEB_STATUS_API_ACCESS_TOKEN, crypto.randomBytes(5).toString('hex'));
 
