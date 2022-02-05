@@ -22,7 +22,7 @@ Simple, privacy first, and scalable Analytics server.
 3. Dynamically configurable - 0 restarts to update configuration.
   
 # Client library
-* The Javascript client library `@aicode/core-analytics-client-lib` can be used from browser/nodejs to raise analytics events. 
+* The Javascript client library `@aicore/core-analytics-client-lib` can be used from browser/nodejs to raise analytics events. 
 [Please see this repository](https://github.com/aicore/core-analytics-client-lib) for docs on how to use the client library.
 
 # Usage
