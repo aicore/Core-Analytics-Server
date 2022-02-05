@@ -59,11 +59,14 @@ changes for the new configuration to take effect. This will help reduce unintend
 1. `configVersion` : The version number for run time configuration. Increase the version number after you made your config file
 changes for the new configuration to take effect. This will help reduce unintended config changes.
 2. `webStatusApisEnabled` : `true/false` to enable or disable web dashboard
-3. `systemGenerated` : The properties in this object are system generated and read only. It is used by the analytics server to communicate about the
+3. `tagClientIPAddress` : If set to true, the remote ip address of the client who raised the post request will be logged.
+If a reverse proxy like nginx is configured, then make sure to forward `x-real-ip` or `X-Forwarded-For` request header
+from nginx to log the correct remote ip.
+4. `systemGenerated` : The properties in this object are system generated and read only. It is used by the analytics server to communicate about the
 config changes to the user.
-4. `rotateDumpFiles`: Specifies details on how the analytics dump files are rotated. See below 
+5. `rotateDumpFiles`: Specifies details on how the analytics dump files are rotated. See below 
 section for more details.
-5. `allowedAppNames`: An array that whitelists the appNames that this analytics
+6. `allowedAppNames`: An array that whitelists the appNames that this analytics
 server will accept. if `*` is specified in the list, then everything will be accepted.
 
 ### rotateDumpFiles configuration

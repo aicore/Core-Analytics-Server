@@ -28,10 +28,22 @@ const port = 3000;
 const WEB_STATUS_API_ACCESS_TOKEN = "webStatusApiAccessToken";
 const QUERY_STRING_TIME_FRAME = "timeFrame";
 const WEB_STATUS_APIS_ENABLED = "webStatusApisEnabled";
+const ONE_HOUR_IN_MS = 1000*60*60;
+
+let statusIPList = [];
+
+setTimeout(()=>{
+    statusIPList = [];
+}, ONE_HOUR_IN_MS);
 
 app.use(express.json()); // for parsing application/json
 
 app.get('/status', async function (req, res, next) {
+    let clientIP= req.headers["x-real-ip"] || req.headers['X-Forwarded-For'] || req.socket.remoteAddress;
+    if(!statusIPList.includes(clientIP)){
+        console.log('status API accessed from IP: ', clientIP);
+        statusIPList.push(clientIP);
+    }
     if(getConfig(WEB_STATUS_APIS_ENABLED) !== true
         || req.query["webStatusApiAccessToken"] !== getSystemGeneratedConfig(WEB_STATUS_API_ACCESS_TOKEN)){
         res.status(401);
@@ -45,9 +57,10 @@ app.get('/status', async function (req, res, next) {
 app.use('/', express.static('www'));
 
 app.post('/ingest', async function (req, res, next) {
+    let clientIP= req.headers["x-real-ip"] || req.headers['X-Forwarded-For'] || req.socket.remoteAddress;
+    req.body["clientIP"] = clientIP;
     const response = await processDataFromClient(req.body);
-    // req.headers["x-real-ip"] || req.headers['X-Forwarded-For'] || request.socket.remoteAddress
-    // to get ip address from loadbalancer.
+
     res.status(response.statusCode);
     res.json(response.returnData);
 });
