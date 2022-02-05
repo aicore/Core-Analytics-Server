@@ -49,6 +49,10 @@ function updateAppsList(jsonData) {
     localStorage.setItem("currentApp", currentApp);
 }
 
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 function updateGraphs(jsonData) {
     const labelArray = [];
     const dataArray = [];
@@ -57,22 +61,28 @@ function updateGraphs(jsonData) {
         if(newKey[0] === currentApp && newKey[1] === 'errors'){
             let errorType = newKey[2];
             labelArray.push(errorType);
-            const sum = jsonData[key].reduce((partialSum, a) => partialSum + a, 0);
-            dataArray.push(sum);
+            const sumOfErrors = jsonData[key].reduce((partialSum, a) => partialSum + a, 0);
+            dataArray.push(sumOfErrors);
         }
     }
     drawChart(`errorTypes`,
         "Type of errors", dataArray,
         getTimeAxis(), "count", labelArray, 'bar');
     drawChart(`totalNumPostRequests`,
-        "Total post requests", jsonData[`${currentApp}.totalNumPostRequests`] ,
+        "Total post requests", jsonData[`${currentApp}.totalNumPostRequests`],
         getTimeAxis(), "count");
+    let sum = jsonData[`${currentApp}.totalNumPostRequests`].reduce((partialSum, a) => partialSum + a, 0);
+    document.getElementById("numPostRequestsPrint").textContent = numberWithCommas(sum);
     drawChart(`numEventsTotal`,
-        "Total number of events", jsonData[`${currentApp}.numEventsTotal`] ,
+        "Total number of events", jsonData[`${currentApp}.numEventsTotal`],
         getTimeAxis(), "count");
+    sum = jsonData[`${currentApp}.numEventsTotal`].reduce((partialSum, a) => partialSum + a, 0);
+    document.getElementById("numTotalEventsPrint").textContent = numberWithCommas(sum);
     drawChart(`totalErrors`,
-        "Total number of errors", jsonData[`${currentApp}.totalErrors`] ,
+        "Total number of errors", jsonData[`${currentApp}.totalErrors`],
         getTimeAxis(), "count");
+    sum = jsonData[`${currentApp}.totalErrors`].reduce((partialSum, a) => partialSum + a, 0);
+    document.getElementById("numTotalErrorsPrint").textContent = numberWithCommas(sum);
 }
 
 function updateAllGraphs() {
