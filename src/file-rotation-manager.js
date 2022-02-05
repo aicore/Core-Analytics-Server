@@ -79,6 +79,7 @@ async function _uploadToLinode(filePath) {
             filePath,
             rotateDumpFiles.storage.bucket
         );
+        await deleteFile(filePath);
     } catch (e) {
         uploadRetryQueue.unshift(filePath);
         console.error(`file upload to linode failed for ${filePath}, 
@@ -105,7 +106,7 @@ async function _rotateDumpFile(appName) {
         if(_isLinodeStore()){
             await _uploadToLinode(compressedFilePath);
             console.log(`Uploaded file ${compressedFilePath} to linode`);
-            await deleteFile(compressedFilePath);
+            // file will be deleted upon successful linod upload by the linode upload retry logic
         } else if(_isNoneDestination()){
             await deleteFile(compressedFilePath);
             console.log(`Deleted file ${compressedFilePath} as 'none' destination is specified`);
