@@ -52,7 +52,8 @@ The features of the analytics server can be configured in the `analytics-config.
 changes for the new configuration to take effect. This will help reduce unintended config changes.
 
 ## Config fields
-1. `configVersion` : The version number for run time configuration as discussed above.
+1. `configVersion` : The version number for run time configuration. Increase the version number after you made your config file
+changes for the new configuration to take effect. This will help reduce unintended config changes.
 2. `webStatusApisEnabled` : `true/false` to enable or disable web dashboard
 3. `systemGenerated` : The properties in this object are system generated and read only. It is used by the analytics server to communicate about the
 config changes to the user.
