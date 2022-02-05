@@ -1,6 +1,7 @@
 {
   "configVersion": 1,
   "webStatusApisEnabled": true,
+  "tagClientIPAddress": true,
   "allowedAppNames": [
     "*"
   ],
