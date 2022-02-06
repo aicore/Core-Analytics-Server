@@ -50,6 +50,7 @@ describe('analytics-data-manager.js Tests', function() {
     it('should fail validation if schema version is not 1', async function() {
         const response = await processDataFromClient({
             "schemaVersion": 2,
+            "accountID": "acc1",
             "appName": "testApp",
             "uuid": "default",
             "sessionID": "def",
@@ -72,6 +73,7 @@ describe('analytics-data-manager.js Tests', function() {
         });
 
         expect(response.statusCode).to.equal(400);
+        expect(response.returnData.errors.includes("Invalid_accountID")).to.be.true;
         expect(response.returnData.errors.includes("Invalid_appName")).to.be.true;
         expect(response.returnData.errors.includes("Invalid_uuid")).to.be.true;
         expect(response.returnData.errors.includes("Invalid_sessionID")).to.be.true;
@@ -79,7 +81,7 @@ describe('analytics-data-manager.js Tests', function() {
         expect(response.returnData.errors.includes("Invalid_unixTimestampUTC")).to.be.true;
         expect(response.returnData.errors.includes("Invalid_numEventsTotal")).to.be.true;
         expect(response.returnData.errors.includes("Invalid_events")).to.be.true;
-        expect(response.returnData.errors.length).to.equal(7);
+        expect(response.returnData.errors.length).to.equal(8);
     });
 
     it('should push to dump file if validation success', async function() {
@@ -89,6 +91,7 @@ describe('analytics-data-manager.js Tests', function() {
         });
         const response = await processDataFromClient({
             "schemaVersion": 1,
+            "accountID": "acc1",
             "appName": "testApp",
             "uuid": "uuid",
             "sessionID": "session1",
@@ -109,6 +112,7 @@ describe('analytics-data-manager.js Tests', function() {
         setupStatusManagerTimers();
         const sampleData = {
             "schemaVersion": 1,
+            "accountID": "acc1",
             "appName": "testApp",
             "uuid": "uuid",
             "sessionID": "session1",
@@ -139,6 +143,7 @@ describe('analytics-data-manager.js Tests', function() {
         setupStatusManagerTimers();
         const sampleData = {
             "schemaVersion": 1,
+            "accountID": "acc1",
             "appName": "testApp",
             "uuid": "uuid",
             "sessionID": "session1",
