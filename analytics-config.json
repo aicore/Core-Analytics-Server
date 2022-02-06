@@ -5,6 +5,9 @@
   "allowedAppNames": [
     "*"
   ],
+  "allowedAccountIDs":[
+    "*"
+  ],
   "rotateDumpFiles": {
     "maxFileSizeBytes": 100000000,
     "rotateInEveryNSeconds": 600,

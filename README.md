@@ -68,6 +68,7 @@ config changes to the user.
 section for more details.
 6. `allowedAppNames`: An array that whitelists the appNames that this analytics
 server will accept. if `*` is specified in the list, then everything will be accepted.
+7. `allowedAccountIDs` An array of account IDs allowed to use this server. Defaults to `*`
 
 ### rotateDumpFiles configuration
 1. `maxFileSizeBytes`: When the current dump file size crosses this threshold, it will be rotated 

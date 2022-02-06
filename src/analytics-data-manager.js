@@ -78,6 +78,14 @@ function isAllowedAppName(appName) {
     return false;
 }
 
+function isAllowedAccountID(accountID) {
+    const allowedAppNames = getConfig("allowedAccountIDs");
+    if(accountID && allowedAppNames.includes("*") || allowedAppNames.includes(accountID)){
+        return true;
+    }
+    return false;
+}
+
 function validateInput(clientData) {
     let errors = [];
     if(clientData["schemaVersion"] !== 1){
@@ -85,6 +93,9 @@ function validateInput(clientData) {
     }
     if(!isAllowedAppName(clientData["appName"])){
         errors.push("Invalid_appName");
+    }
+    if(!isAllowedAccountID(clientData["accountID"])){
+        errors.push("Invalid_accountID");
     }
     if(!clientData["uuid"]){
         errors.push("Invalid_uuid");
