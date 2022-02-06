@@ -79,8 +79,8 @@ function isAllowedAppName(appName) {
 }
 
 function isAllowedAccountID(accountID) {
-    const allowedAppNames = getConfig("allowedAccountIDs");
-    if(accountID && allowedAppNames.includes("*") || allowedAppNames.includes(accountID)){
+    const allowedAccountIDs = getConfig("allowedAccountIDs");
+    if(accountID && allowedAccountIDs.includes("*") || allowedAccountIDs.includes(accountID)){
         return true;
     }
     return false;
