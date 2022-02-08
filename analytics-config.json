@@ -5,7 +5,7 @@
   "allowedAppNames": [
     "*"
   ],
-  "allowedAccountIDs":[
+  "allowedAccountIDs": [
     "*"
   ],
   "rotateDumpFiles": {
@@ -17,6 +17,6 @@
     }
   },
   "systemGenerated": {
-    "webStatusApiAccessToken": "3a176c0d3a"
+    "webStatusApiAccessToken": "36fc515284"
   }
 }

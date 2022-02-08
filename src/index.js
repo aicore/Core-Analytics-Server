@@ -18,6 +18,7 @@
 
 import express from 'express';
 import crypto from 'crypto';
+import cors from 'cors';
 import {getServerStats, processDataFromClient} from "./analytics-data-manager.js";
 import {setupFileRotationTimers} from "./file-rotation-manager.js";
 import {updateSystemGeneratedConfig, getConfig, getSystemGeneratedConfig} from "./config-manager.js";
@@ -56,11 +57,17 @@ app.get('/status', async function (req, res, next) {
 
 app.use('/', express.static('www'));
 
+app.use(cors({
+    methods: ['POST']
+}));
 app.post('/ingest', async function (req, res, next) {
     let clientIP= req.headers["x-real-ip"] || req.headers['X-Forwarded-For'] || req.socket.remoteAddress;
     req.body["clientIP"] = clientIP;
     const response = await processDataFromClient(req.body);
-
+    res.set({
+        'Access-Control-Allow-Origin': '*'
+    });
+    res.status(response.statusCode);
     res.status(response.statusCode);
     res.json(response.returnData);
 });
