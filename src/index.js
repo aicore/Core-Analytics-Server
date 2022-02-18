@@ -81,4 +81,9 @@ setupStatusManagerTimers();
 
 updateSystemGeneratedConfig(WEB_STATUS_API_ACCESS_TOKEN, crypto.randomBytes(5).toString('hex'));
 
+process.on('uncaughtException', function(err){
+    console.error("uncaught ERR, silently swallowing hoping for the best!!!!",err);
+});
+
+
 export default app;
