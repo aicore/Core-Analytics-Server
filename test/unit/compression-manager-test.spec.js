@@ -30,7 +30,7 @@ let expect = chai.expect;
 
 describe('compression-manager.js Tests', function() {
     it('Should throw error if no file to compress', async function() {
-        let fileName = getNewV1FileName("testApp");
+        let fileName = getNewV1FileName("testApp").fileName;
         let compressedFileName = `${fileName}.tar.gz`;
         let err = null;
         try{

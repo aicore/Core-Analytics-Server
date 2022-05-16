@@ -44,7 +44,8 @@ const UTF8 = 'UTF8';
 
 async function _createNewHandleForApp(appName) {
     const dataPath = path.resolve('data');
-    const fileName = getNewV1FileName(appName);
+    const fileNameDetails = getNewV1FileName(appName);
+    const fileName = fileNameDetails.fileName;
     const filePath = `${dataPath}/${fileName}`;
     const startTime = getUnixTimestampUTCNow();
     const fileContent = `{
@@ -58,6 +59,9 @@ async function _createNewHandleForApp(appName) {
     const handle = {
         appName: appName,
         fileName: fileName,
+        year: fileNameDetails.year,
+        month: fileNameDetails.month,
+        day: fileNameDetails.day,
         filePath: filePath,
         startTime: startTime,
         writableStream: writableStream,
