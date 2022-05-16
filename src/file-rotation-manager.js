@@ -22,6 +22,7 @@ import {compressFile} from "./compression-manager.js";
 import {deleteFile} from "./utils.js";
 import events from "events";
 import linodeModule from '@aicore/linode-object-storage-lib';
+import wasabiModule from "@aicore/wasabi-storage-lib";
 
 const UPLOAD_RETRY_TIME_SECONDS = 30;
 const ALL_DUMPS_ROTATED_EVENT = 'ALL_DUMPS_ROTATED_EVENT';
@@ -50,6 +51,7 @@ let uploadRetryInterval = null;
 
 async function rotateAllDumpFiles(){
     let appNames = getAllAppNames();
+    console.log(`Initiating file rotation for ${appNames.length} apps: ${appNames}`);
     for (let appName of appNames){
         await _rotateDumpFile(appName);
     }
@@ -66,23 +68,38 @@ function _isLinodeStore() {
     return rotateDumpFiles.storage.destination === "linode";
 }
 
+function _isWasabiStore() {
+    return rotateDumpFiles.storage.destination === "wasabi";
+}
+
 function _isNoneDestination() {
     return rotateDumpFiles.storage.destination === "none";
 }
 
-async function _uploadToLinode(filePath) {
+async function _uploadToCloud(filePath) {
+    let cloudModule,
+        destination = rotateDumpFiles.storage.destination,
+        region = rotateDumpFiles.storage.region,
+        bucket= rotateDumpFiles.storage.bucket;
     try {
-        await linodeModule.uploadFileToLinodeBucket(
+        if(_isLinodeStore()){
+            cloudModule = linodeModule;
+            console.log(`uploading file ${filePath} to Linode storage ${region}: ${bucket}`);
+        } else{
+            cloudModule = wasabiModule;
+            console.log(`uploading file ${filePath} to Wasabi storage ${region}: ${bucket}`);
+        }
+        await cloudModule.uploadFileToBucket(
             rotateDumpFiles.storage.accessKeyId,
             rotateDumpFiles.storage.secretAccessKey,
-            rotateDumpFiles.storage.region,
+            region,
             filePath,
-            rotateDumpFiles.storage.bucket
+            bucket
         );
         await deleteFile(filePath);
     } catch (e) {
         uploadRetryQueue.unshift(filePath);
-        console.error(`file upload to linode failed for ${filePath}, 
+        console.error(`file upload to ${destination} failed for ${filePath}, 
         will retry in ${rotateDumpFiles.storage.uploadRetryTimeSecs}S`, e);
     }
 }
@@ -103,10 +120,10 @@ async function _rotateDumpFile(appName) {
     if(appFileHandle){
         let compressedFilePath = await compressFile(appFileHandle.filePath);
         await deleteFile(appFileHandle.filePath);
-        if(_isLinodeStore()){
-            await _uploadToLinode(compressedFilePath);
-            console.log(`Uploaded file ${compressedFilePath} to linode`);
-            // file will be deleted upon successful linod upload by the linode upload retry logic
+        if(_isLinodeStore() || _isWasabiStore()){
+            await _uploadToCloud(compressedFilePath);
+            console.log(`Uploaded file ${compressedFilePath} to cloud`);
+            // file will be deleted upon successful linode upload by the linode upload retry logic
         } else if(_isNoneDestination()){
             await deleteFile(compressedFilePath);
             console.log(`Deleted file ${compressedFilePath} as 'none' destination is specified`);
@@ -146,7 +163,7 @@ async function setupFileRotationTimers() {
     }
     uploadRetryInterval = setInterval(async ()=>{
         if(uploadRetryQueue.length > 0){
-            await _uploadToLinode(uploadRetryQueue.pop());
+            await _uploadToCloud(uploadRetryQueue.pop());
             eventEmitter.emit(UPLOAD_RETRIED_EVENT);
         }
     }, rotateDumpFiles.storage.uploadRetryTimeSecs * 1000);

@@ -76,11 +76,12 @@ to persistent storage and a new dump file will be created to continue dumping.
 2. `rotateInEveryNSeconds`: The time in seconds after which the log file will be rotated. Note that the log file
 will be rotated when either of `maxFileSizeBytes` or `rotateInEveryNSeconds` threshold is breached.
    1. `storage`: Configuration on where to persist the rotated dump file.
-      1. `destination`: Can be `none`, `local` or `linode`. 
+      1. `destination`: Can be `none`, `local` , `linode` or `wasabi`. 
           2. If the destination is `local`, the dumps will be persisted in the current machine.
           3. If the destination is `none`, the dumps will be deleted as soon as it is rotated.
           4. If `destination` is `linode`, then provide linode object storage access config here.
-          5. `uploadRetryTimeSecs`, the system will try to retry a failed upload to linode based on this timeout. 
+          5. If `destination` is `wasabi`, then provide wasabi object storage access config here.
+          6. `uploadRetryTimeSecs`, the system will try to retry a failed upload to linode based on this timeout. 
          default is 30 seconds.
              ``` 
              // Linode storage config example: 
