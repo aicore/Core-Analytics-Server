@@ -25,7 +25,7 @@ function getNewV1FileName(appName) {
         year = `${now.getUTCFullYear()}`,
         month = `${now.getUTCMonth()+1}`,
         day = `${now.getUTCDate()}`;
-    let fileName = `${appName}.${year}-${month}-${now.getUTCDate()}-${now.getUTCHours()}` +
+    let fileName = `${appName}.${year}-${month}-${day}-${now.getUTCHours()}` +
         `-${now.getUTCMinutes()}-${now.getUTCSeconds()}-${now.getUTCMilliseconds()}.v1.json`;
     return {
         fileName,
