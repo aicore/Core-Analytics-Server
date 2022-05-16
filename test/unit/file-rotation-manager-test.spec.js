@@ -167,4 +167,37 @@ describe('file-rotation-manager.js Tests', function() {
         }
         f();
     }).timeout(10000);
+
+    it('Should upload file on bytes exceeded to wasabi', function(done) {
+        async function f() {
+            defaultConfig["rotateDumpFiles"] = {
+                maxFileSizeBytes: 1000,
+                rotateInEveryNSeconds: 600,
+                storage: {
+                    destination: "wasabi",
+                    accessKeyId: "LinodeAccessKeyId",
+                    secretAccessKey: "LinodeSecretAccessKey",
+                    region: "LinodeRegion",
+                    bucket: "LinodeBucket",
+                    uploadRetryTimeSecs: 1
+                }
+            };
+            await _writeDefaultConfigTestFile();
+            let uploadRetried = false;
+            await rotateAllDumpFiles();
+
+            onFileRotationEvent(UPLOAD_RETRIED_EVENT, async ()=>{
+                uploadRetried = true;
+            });
+            let sample = await readTextFile('package.json');
+            await pushDataForApp("app1", sample);
+            await pushDataForApp("app2", "world");
+            while(!uploadRetried){
+                await sleep(100);
+            }
+            expect(uploadRetried).to.equal(true);
+            done();
+        }
+        f();
+    }).timeout(10000);
 });

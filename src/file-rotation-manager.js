@@ -23,6 +23,7 @@ import {deleteFile} from "./utils.js";
 import events from "events";
 import linodeModule from '@aicore/linode-object-storage-lib';
 import wasabiModule from "@aicore/wasabi-storage-lib";
+import path from "path";
 
 const UPLOAD_RETRY_TIME_SECONDS = 30;
 const ALL_DUMPS_ROTATED_EVENT = 'ALL_DUMPS_ROTATED_EVENT';
@@ -76,7 +77,7 @@ function _isNoneDestination() {
     return rotateDumpFiles.storage.destination === "none";
 }
 
-async function _uploadToCloud(filePath) {
+async function _uploadToCloud(filePath, destFileName) {
     let cloudModule,
         destination = rotateDumpFiles.storage.destination,
         region = rotateDumpFiles.storage.region,
@@ -94,7 +95,8 @@ async function _uploadToCloud(filePath) {
             rotateDumpFiles.storage.secretAccessKey,
             region,
             filePath,
-            bucket
+            bucket,
+            destFileName
         );
         await deleteFile(filePath);
     } catch (e) {
@@ -121,7 +123,9 @@ async function _rotateDumpFile(appName) {
         let compressedFilePath = await compressFile(appFileHandle.filePath);
         await deleteFile(appFileHandle.filePath);
         if(_isLinodeStore() || _isWasabiStore()){
-            await _uploadToCloud(compressedFilePath);
+            const year = appFileHandle.year, month = appFileHandle.month, day = appFileHandle.day;
+            await _uploadToCloud(compressedFilePath,
+                `${appName}/${year}/${month}/${day}/${path.basename(compressedFilePath)}`);
             console.log(`Uploaded file ${compressedFilePath} to cloud`);
             // file will be deleted upon successful linode upload by the linode upload retry logic
         } else if(_isNoneDestination()){

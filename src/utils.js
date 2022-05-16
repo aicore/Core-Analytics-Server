@@ -21,9 +21,18 @@ const fsPromises = fs.promises;
 
 // file name is of the format AppName.yyyy-mm-dd-hh-mm-ss.ms.v1.json
 function getNewV1FileName(appName) {
-    const now = new Date(Date.now());
-    return `${appName}.${now.getUTCFullYear()}-${now.getUTCMonth()+1}-${now.getUTCDate()}-${now.getUTCHours()}` +
+    const now = new Date(Date.now()),
+        year = `${now.getUTCFullYear()}`,
+        month = `${now.getUTCMonth()+1}`,
+        day = `${now.getUTCDate()}`;
+    let fileName = `${appName}.${year}-${month}-${now.getUTCDate()}-${now.getUTCHours()}` +
         `-${now.getUTCMinutes()}-${now.getUTCSeconds()}-${now.getUTCMilliseconds()}.v1.json`;
+    return {
+        fileName,
+        year,
+        month,
+        day
+    };
 }
 
 function getUnixTimestampUTCNow() {

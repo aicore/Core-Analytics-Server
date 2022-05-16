@@ -26,8 +26,15 @@ let expect = chai.expect;
 
 describe('util Tests', function() {
     it('Should get correct file name of format: AppName.yyyy-mm-dd-hh-mm-ss.ms.v1.json', function() {
-        let fileName = getNewV1FileName("testApp");
+        let fileNameObject = getNewV1FileName("testApp");
+        const fileName = fileNameObject.fileName,
+            year = fileNameObject.year,
+            month = fileNameObject.month,
+            day = fileNameObject.day;
         expect(fileName).to.be.a('string');
+        expect(year).to.be.a('string');
+        expect(month).to.be.a('string');
+        expect(day).to.be.a('string');
         expect(fileName.startsWith("testApp")).to.be.true;
         expect(fileName.endsWith(".v1.json")).to.be.true;
         expect(fileName.split("-").length).to.equal(7);
@@ -43,3 +50,4 @@ describe('util Tests', function() {
         expect(deleteStatus).to.be.false;
     });
 });
+
