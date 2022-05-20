@@ -60,7 +60,7 @@ section for more details.
 server will accept. if `*` is specified in the list, then everything will be accepted.
 7. `allowedAccountIDs` An array of account IDs allowed to use this server. Defaults to `*`
 8. `accountConfig` - The app config that can be optionally supplied to all clients. 
-Use this to control client behavior such as `postIntervalSecondsInit, granularitySecInit, postBaseURLInit` when calling the `analyticsClient::initSession` api or
+Use this to control client behavior such as `postIntervalSecondsInit, granularitySecInit, analyticsURLInit` when calling the `analyticsClient::initSession` api or
 if you want to supply custom config to the app via `analyticsClient::getAppConfig` API.
 
 ### rotateDumpFiles configuration
@@ -97,7 +97,7 @@ A sample account config section is given below:
       "*": {
         "postIntervalSecondsInit": 600,
         "granularitySecInit": 3,
-        "postBaseURLInit": "http://localhost:3000"
+        "analyticsURLInit": "http://your.app.specific.analytics.server.url"
       },
       "appName1": {
         "postIntervalSecondsInit": 30,
