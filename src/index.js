@@ -21,7 +21,7 @@ import crypto from 'crypto';
 import cors from 'cors';
 import {getServerStats, processDataFromClient} from "./analytics-data-manager.js";
 import {setupFileRotationTimers} from "./file-rotation-manager.js";
-import {updateSystemGeneratedConfig, getConfig, getSystemGeneratedConfig} from "./config-manager.js";
+import {updateSystemGeneratedConfig, getConfig, getSystemGeneratedConfig, getAppConfig} from "./config-manager.js";
 import {setupStatusManagerTimers} from "./status-manager.js";
 
 const app = express();
@@ -38,8 +38,12 @@ setTimeout(()=>{
 }, ONE_HOUR_IN_MS);
 
 app.use(express.json()); // for parsing application/json
+app.use('/', express.static('www'));
+app.use(cors({
+    methods: ['POST', 'GET']
+}));
 
-app.get('/status', async function (req, res, next) {
+app.get('/status', async function (req, res, _next) {
     let clientIP= req.headers["x-real-ip"] || req.headers['X-Forwarded-For'] || req.socket.remoteAddress;
     if(!statusIPList.includes(clientIP)){
         console.log('status API accessed from IP: ', clientIP);
@@ -55,12 +59,20 @@ app.get('/status', async function (req, res, next) {
     res.json(getServerStats(req.query[QUERY_STRING_TIME_FRAME]));
 });
 
-app.use('/', express.static('www'));
+app.get('/getAppConfig', async function (req, res, _next) {
+    let appName = req.query["appName"],
+        accountID = req.query["accountID"],
+        appConfig = getAppConfig(accountID, appName);
+    if(!appName || !accountID){
+        res.status(400);
+        res.json({error: "Bad Request: Query parameter appName or accountID missing"});
+        return;
+    }
+    res.status(200);
+    res.json(appConfig);
+});
 
-app.use(cors({
-    methods: ['POST']
-}));
-app.post('/ingest', async function (req, res, next) {
+app.post('/ingest', async function (req, res, _next) {
     let clientIP= req.headers["x-real-ip"] || req.headers['X-Forwarded-For'] || req.socket.remoteAddress;
     req.body["clientIP"] = clientIP;
     const response = await processDataFromClient(req.body);

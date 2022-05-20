@@ -22,6 +22,8 @@ import events from "events";
 import cloneDeep from 'clone-deep';
 import {writeAsJson, readJsonFile} from "./utils.js";
 
+const ACCOUNT_CONFIG_KEY = "accountConfig",
+    SYSTEM_GENERATED_CONFIG_KEY = "systemGenerated";
 const DEFAULT_CONFIG_FILE_PATH = path.resolve('analytics-config.json');
 const CONFIG_CHANGED_EVENT = 'CONFIG_CHANGED_EVENT';
 const eventEmitter = new events();
@@ -52,7 +54,7 @@ reloadConfigFile();
 
 async function updateSystemGeneratedConfig(key, value) {
     await reloadConfigFile();
-    configuration["systemGenerated"][key] = value;
+    configuration[SYSTEM_GENERATED_CONFIG_KEY][key] = value;
     await writeAsJson(configFilePath, configuration);
     await reloadConfigFile();
 }
@@ -62,9 +64,17 @@ function getConfig(key) {
 }
 
 function getSystemGeneratedConfig(key) {
-    if(configuration["systemGenerated"]){
-        return configuration["systemGenerated"][key];
+    if(configuration[SYSTEM_GENERATED_CONFIG_KEY]){
+        return configuration[SYSTEM_GENERATED_CONFIG_KEY][key];
     }
+}
+
+function getAppConfig(accountID, appName) {
+    const config = configuration[ACCOUNT_CONFIG_KEY] || {};
+    const accountConfig = config[accountID] || {};
+    const defaultAccountConfig = accountConfig['*'];
+    const appSpecificConfig = accountConfig[appName];
+    return appSpecificConfig || defaultAccountConfig || {};
 }
 
 async function setConfigFilePath(newConfigFilePath) {
@@ -75,7 +85,7 @@ async function setConfigFilePath(newConfigFilePath) {
 
 function _setupConfigFileWatcher() {
     fs.watch(configFilePath, { persistent: false },
-        async function (eventType, filename) {
+        async function (eventType, _filename) {
             if(eventType === 'change'){
                 let newConfiguration = await readJsonFile(configFilePath);
                 if(newConfiguration.configVersion > configuration.configVersion){
@@ -94,6 +104,7 @@ export {
     // use updateSystemGeneratedConfig section for that.
     updateSystemGeneratedConfig,
     getSystemGeneratedConfig,
+    getAppConfig,
     reloadConfigFile,
     setConfigFilePath,
     onConfigEvent,

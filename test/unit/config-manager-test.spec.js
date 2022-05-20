@@ -26,6 +26,7 @@ import {
     getSystemGeneratedConfig,
     setConfigFilePath,
     onConfigEvent,
+    getAppConfig,
     CONFIG_CHANGED_EVENT,
     DEFAULT_CONFIG_FILE_PATH
 } from "../../src/config-manager.js";
@@ -34,17 +35,44 @@ import {sleep} from "./test-utils.js";
 import path from "path";
 
 let expect = chai.expect;
-let defaultConfig = {};
+const defaultConfig = {
+    "configVersion": 1,
+    "webStatusApisEnabled": true,
+    "tagClientIPAddress": true,
+    "allowedAppNames": [
+        "*"
+    ],
+    "allowedAccountIDs": [
+        "*"
+    ],
+    "accountConfig": {
+        "accountID1": {
+            "*": {
+                "hello": "world"
+            },
+            "appName1": {
+                "val": 2
+            }
+        }
+    },
+    "rotateDumpFiles": {
+        "maxFileSizeBytes": 100000000,
+        "rotateInEveryNSeconds": 600,
+        "storage": {
+            "destination": "local",
+            "uploadRetryTimeSecs": 30
+        }
+    },
+    "systemGenerated": {
+        "webStatusApiAccessToken": "96afccb07e"
+    }
+};
+
 let TEST_CONFIG_FILE_PATH = path.resolve("analytics-config-test.json");
 
 describe('config-manager.js Tests', function() {
-    before(async function () {
-        defaultConfig = await readJsonFile(DEFAULT_CONFIG_FILE_PATH);
-        await writeAsJson(TEST_CONFIG_FILE_PATH, {});
-        await setConfigFilePath(TEST_CONFIG_FILE_PATH);
-    });
-
     beforeEach(async function () {
+        defaultConfig.configVersion ++;
         await writeAsJson(TEST_CONFIG_FILE_PATH, defaultConfig);
         await setConfigFilePath(TEST_CONFIG_FILE_PATH);
     });
@@ -84,6 +112,14 @@ describe('config-manager.js Tests', function() {
         await writeAsJson(TEST_CONFIG_FILE_PATH, currentConfig);
         await sleep(100);
         expect(getConfig("newTestKey")).to.be.undefined;
+    });
+
+    it('Should getAppConfig return {} if no accountID and AppName provided', async function() {
+        expect(getAppConfig()).to.eql({});
+        expect(getAppConfig("non_exist_id")).to.eql({});
+        expect(getAppConfig("non_exist_id", "non_exist_app")).to.eql({});
+        expect(getAppConfig("accountID1")).to.eql(defaultConfig.accountConfig.accountID1['*']);
+        expect(getAppConfig("accountID1", 'appName1')).to.eql(defaultConfig.accountConfig.accountID1.appName1);
     });
 
     it('Should generate config changed event', function(done) {
