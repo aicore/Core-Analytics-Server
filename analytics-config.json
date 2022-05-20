@@ -8,6 +8,8 @@
   "allowedAccountIDs": [
     "*"
   ],
+  "accountConfig": {
+  },
   "rotateDumpFiles": {
     "maxFileSizeBytes": 100000000,
     "rotateInEveryNSeconds": 600,
@@ -17,6 +19,6 @@
     }
   },
   "systemGenerated": {
-    "webStatusApiAccessToken": "36fc515284"
+    "webStatusApiAccessToken": "292e22712b"
   }
 }
