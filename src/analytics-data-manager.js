@@ -23,7 +23,6 @@
 //     "appName" : "app1",
 //     "uuid": "u1",
 //     "sessionID": "s1",
-//     "granularitySec" : 3,
 //     "unixTimestampUTC" : 1643043376,
 //     "events":{
 //     "eventType":{
@@ -72,18 +71,12 @@ function _getFailureResponse(statusCode, errorsArray) {
 
 function isAllowedAppName(appName) {
     const allowedAppNames = getConfig("allowedAppNames");
-    if(appName && allowedAppNames.includes("*") || allowedAppNames.includes(appName)){
-        return true;
-    }
-    return false;
+    return (appName && (allowedAppNames.includes("*") || allowedAppNames.includes(appName)));
 }
 
 function isAllowedAccountID(accountID) {
     const allowedAccountIDs = getConfig("allowedAccountIDs");
-    if(accountID && allowedAccountIDs.includes("*") || allowedAccountIDs.includes(accountID)){
-        return true;
-    }
-    return false;
+    return (accountID && (allowedAccountIDs.includes("*") || allowedAccountIDs.includes(accountID)));
 }
 
 function validateInput(clientData) {
@@ -102,9 +95,6 @@ function validateInput(clientData) {
     }
     if(!clientData["sessionID"]){
         errors.push("Invalid_sessionID");
-    }
-    if(!clientData["granularitySec"]){
-        errors.push("Invalid_granularitySec");
     }
     if(!clientData["unixTimestampUTC"]){
         errors.push("Invalid_unixTimestampUTC");
@@ -127,9 +117,8 @@ function getServerStats(timeFrame) {
         return getAllHoursMetric();
     } else if(timeFrame==="dd") {
         return getAllDaysMetric();
-    } else {
-        return getAllSecondsMetric();
     }
+    return getAllSecondsMetric();
 }
 
 function _updateServerStats(clientData) {

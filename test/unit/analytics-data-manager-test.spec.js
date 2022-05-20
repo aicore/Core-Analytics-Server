@@ -54,7 +54,6 @@ describe('analytics-data-manager.js Tests', function() {
             "appName": "testApp",
             "uuid": "default",
             "sessionID": "def",
-            "granularitySec": 3,
             "unixTimestampUTC": 1643043376,
             "numEventsTotal": 5,
             "events": {}
@@ -77,11 +76,10 @@ describe('analytics-data-manager.js Tests', function() {
         expect(response.returnData.errors.includes("Invalid_appName")).to.be.true;
         expect(response.returnData.errors.includes("Invalid_uuid")).to.be.true;
         expect(response.returnData.errors.includes("Invalid_sessionID")).to.be.true;
-        expect(response.returnData.errors.includes("Invalid_granularitySec")).to.be.true;
         expect(response.returnData.errors.includes("Invalid_unixTimestampUTC")).to.be.true;
         expect(response.returnData.errors.includes("Invalid_numEventsTotal")).to.be.true;
         expect(response.returnData.errors.includes("Invalid_events")).to.be.true;
-        expect(response.returnData.errors.length).to.equal(8);
+        expect(response.returnData.errors.length).to.equal(7);
     });
 
     it('should push to dump file if validation success', async function() {
@@ -95,7 +93,6 @@ describe('analytics-data-manager.js Tests', function() {
             "appName": "testApp",
             "uuid": "uuid",
             "sessionID": "session1",
-            "granularitySec": 3,
             "unixTimestampUTC": 1643043376,
             "numEventsTotal": 5,
             "events": {}
@@ -116,7 +113,6 @@ describe('analytics-data-manager.js Tests', function() {
             "appName": "testApp",
             "uuid": "uuid",
             "sessionID": "session1",
-            "granularitySec": 3,
             "unixTimestampUTC": 1643043376
         };
         await processDataFromClient(sampleData);
@@ -147,7 +143,6 @@ describe('analytics-data-manager.js Tests', function() {
             "appName": "testApp",
             "uuid": "uuid",
             "sessionID": "session1",
-            "granularitySec": 3,
             "unixTimestampUTC": 1643043376,
             "numEventsTotal": 5,
             "events": {
