@@ -43,6 +43,16 @@ app.use(cors({
     methods: ['POST', 'GET']
 }));
 
+/*
+The status api: If the status API is enabled, it can be accessed via the link
+`http://localhost:3000/status?webStatusApiAccessToken=135492efe8&timeFrame=ss`
+* `webStatusApiAccessToken` can be found in the `systemGenerated` section in the configuration file.
+* `timeFrame` can be one of the strings
+   * `ss` (last 60 seconds)
+   * `mm` (last 60 minutes)
+   * `hh` (last 24 minutes)
+   * `dd` (last 360 minutes)
+*/
 app.get('/status', async function (req, res, _next) {
     let clientIP= req.headers["x-real-ip"] || req.headers['X-Forwarded-For'] || req.socket.remoteAddress;
     if(!statusIPList.includes(clientIP)){

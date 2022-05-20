@@ -39,16 +39,6 @@ This dashboard gives a quick glance of the status of the server.
 
 ![image](https://user-images.githubusercontent.com/5336369/152588624-66821cb5-8216-46a2-bb73-4f939ea180e4.png)
 
-## The status api
-If the status API is enabled, it can be access via the link
-`http://<localhost:3000>/status?webStatusApiAccessToken=135492efe8&timeFrame=ss`
-* `webStatusApiAccessToken` can be found in the `systemGenerated` section in the configuration file.
-* `timeFrame` can be one of the strings
-   * `ss` (last 60 seconds)
-   * `mm` (last 60 minutes)
-   * `hh` (last 24 minutes)
-   * `dd` (last 360 minutes)
-
 # Config
 The features of the analytics server can be configured in the `analytics-config.json` file.
 * The changes to the file will be automatically picked up and configuration updated by the server without needing a restart.
@@ -69,6 +59,9 @@ section for more details.
 6. `allowedAppNames`: An array that whitelists the appNames that this analytics
 server will accept. if `*` is specified in the list, then everything will be accepted.
 7. `allowedAccountIDs` An array of account IDs allowed to use this server. Defaults to `*`
+8. `accountConfig` - The app config that can be optionally supplied to all clients. 
+Use this to control client behavior such as `postIntervalSecondsInit, granularitySecInit, postBaseURLInit` when calling the `analyticsClient::initSession` api or
+if you want to supply custom config to the app via `analyticsClient::getAppConfig` API.
 
 ### rotateDumpFiles configuration
 1. `maxFileSizeBytes`: When the current dump file size crosses this threshold, it will be rotated 
@@ -94,6 +87,30 @@ will be rotated when either of `maxFileSizeBytes` or `rotateInEveryNSeconds` thr
                 "uploadRetryTimeSecs": 30
              }
              ```
+### accountConfig configuration
+A sample account config section is given below:
+
+```json
+{
+  "accountConfig": {
+    "accountID1": {
+      "*": {
+        "postIntervalSecondsInit": 600,
+        "granularitySecInit": 3,
+        "postBaseURLInit": "http://localhost:3000"
+      },
+      "appName1": {
+        "postIntervalSecondsInit": 30,
+        "yourCustomObj1": {}
+      }
+    }
+  }
+}
+```
+In the above example, when client calls initSession API, the behavior is as follows
+1. When `initSession("accountID1", "test")` is called, The default account config for `accountID1` in `*` is used.
+2. When `initSession("accountID1", "appName1")` is called, The config specific to `appName1` is used. So `postIntervalSecondsInit` is set to 30 seconds at client. Also use the `getAppConfig` API in client to retrieve `yourCustomObj1` or other custom config.
+3. When `initSession("accountID2", "appName2")` is called, `{}` is returned as no `accountConfig` is specified. 
 
 ### systemGenerated configuration
 1. `webStatusApiAccessToken` : a random token that can be used to access the `/status?webStatusApiAccessToken=xxxx` api.
